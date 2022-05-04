@@ -8,5 +8,6 @@ enum Tile
     Rocky,
     Florest,
     Water,
-    Moutain
+    Mountain
 }
+

@@ -5,19 +5,44 @@ using UnityEngine;
 public class MapBuilder : MonoBehaviour
 {
     Tile[,] tileMap;
+    private const string fileName = "Assets/Resources/text.txt";
     void Start()
     {
-        // byte[] caracteres = System.IO.File.ReadAllBytes("Assets/Resources/text.txt");
-        // foreach (byte caracter in caracteres)
-        // {
-        //     Debug.Log((char) caracter);
-        // }
+        tileMap = textToTileMap(fileName);
+        renderTileMap();
+    }
 
-        string[] lines = System.IO.File.ReadAllLines("Assets/Resources/text.txt");
+    void Update()
+    {
+        
+    }
+
+    private void renderTileMap()
+    {
+        int m = tileMap.GetLength(0);
+        int n = tileMap.GetLength(1);
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                string childName = tileToString(tileMap[i,j]);
+                GameObject child = transform.Find(childName).gameObject;
+                GameObject newTile = Instantiate(child);
+                newTile.SetActive(true);
+                newTile.transform.SetParent(transform);
+                newTile.transform.position = new Vector3(i * 10, 0, j * 10);
+            }
+        }  
+    }
+
+    private Tile[,] textToTileMap(string fileName)
+    {
+        string[] lines = System.IO.File.ReadAllLines(fileName);
         int nLines = lines.Length;
         int charPerLine = lines[0].Length;
 
-        tileMap = new Tile[nLines,charPerLine];
+        Tile[,] tileMap = new Tile[nLines,charPerLine];
 
         for (int i = 0; i < nLines; i++)
         {
@@ -26,13 +51,7 @@ public class MapBuilder : MonoBehaviour
                 tileMap[i,j] = charToTile(lines[i][j]);
             }
         }   
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return tileMap;
     }
 
     private Tile charToTile(char c)
@@ -48,9 +67,28 @@ public class MapBuilder : MonoBehaviour
             case 'A':
                 return Tile.Water;
             case 'M':
-                return Tile.Moutain;
+                return Tile.Mountain;
             default:
                 return Tile.Plain;
+        }
+    }
+
+    private string tileToString(Tile tile)
+    {
+        switch (tile)
+        {
+            case Tile.Plain:
+                return "Plain Tile";
+            case Tile.Rocky:
+                return "Rocky Tile";
+            case Tile.Florest:
+                return "Florest Tile";
+            case Tile.Water:
+                return "Water Tile";
+            case Tile.Mountain:
+                return "Mountain Tile";
+            default:
+                return "Plain Tile";
         }
     }
 }
