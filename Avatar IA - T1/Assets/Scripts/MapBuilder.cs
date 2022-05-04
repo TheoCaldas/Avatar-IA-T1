@@ -9,7 +9,7 @@ public class MapBuilder : MonoBehaviour
     void Start()
     {
         tileMap = textToTileMap(fileName);
-        renderTileMap();
+        renderTileMap(tileMap);
     }
 
     void Update()
@@ -17,7 +17,7 @@ public class MapBuilder : MonoBehaviour
         
     }
 
-    private void renderTileMap()
+    private void renderTileMap(Tile[,] tileMap)
     {
         int m = tileMap.GetLength(0);
         int n = tileMap.GetLength(1);
