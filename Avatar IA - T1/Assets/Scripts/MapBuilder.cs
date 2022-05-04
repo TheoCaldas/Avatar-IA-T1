@@ -6,19 +6,18 @@ public class MapBuilder : MonoBehaviour
 {
     Tile[,] tileMap;
     private const string fileName = "Assets/Resources/text.txt";
+    public GameObject baseTile;
+    public List<Material> tileMaterials;
+    public float tilesDistance = 10;
     void Start()
     {
         tileMap = textToTileMap(fileName);
         renderTileMap(tileMap);
     }
 
-    void Update()
-    {
-        
-    }
-
     private void renderTileMap(Tile[,] tileMap)
     {
+        //get x and y dimensions
         int m = tileMap.GetLength(0);
         int n = tileMap.GetLength(1);
 
@@ -26,69 +25,55 @@ public class MapBuilder : MonoBehaviour
         {
             for (int j = 0; j < n; j++)
             {
-                string childName = tileToString(tileMap[i,j]);
-                GameObject child = transform.Find(childName).gameObject;
-                GameObject newTile = Instantiate(child);
+                //copy base tile and reflect it to tileMap[i,j]
+                GameObject newTile = Instantiate(baseTile);
                 newTile.SetActive(true);
                 newTile.transform.SetParent(transform);
-                newTile.transform.position = new Vector3(i * 10, 0, j * 10);
+                newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
+                newTile.name = tileMap[i,j].ToString();
+
+                tileMap[i,j].tile3D = newTile;
             }
         }  
     }
 
     private Tile[,] textToTileMap(string fileName)
     {
+        //read all lines of .txt
         string[] lines = System.IO.File.ReadAllLines(fileName);
         int nLines = lines.Length;
         int charPerLine = lines[0].Length;
 
+        //new tile map matrix
         Tile[,] tileMap = new Tile[nLines,charPerLine];
 
-        for (int i = 0; i < nLines; i++)
+        for (int i = 0; i < nLines; i++) //each line
         {
-            for (int j = 0; j < charPerLine; j++)
+            for (int j = 0; j < charPerLine; j++) //each char in line
             {
-                tileMap[i,j] = charToTile(lines[i][j]);
+                tileMap[i,j] = new Tile(lines[i][j], i, j); //create new tile
             }
         }   
         return tileMap;
     }
 
-    private Tile charToTile(char c)
+    private Material tileTypeToMaterial(TileType type)
     {
-        switch (c)
+        switch (type)
         {
-            case '.':
-                return Tile.Plain;
-            case 'R':
-                return Tile.Rocky;
-            case 'V':
-                return Tile.Florest;
-            case 'A':
-                return Tile.Water;
-            case 'M':
-                return Tile.Mountain;
+            case TileType.Plain:
+                return tileMaterials[0];
+            case TileType.Rocky:
+                return tileMaterials[1];
+            case TileType.Florest:
+                return tileMaterials[2];
+            case TileType.Water:
+                return tileMaterials[3];
+            case TileType.Mountain:
+                return tileMaterials[4];
             default:
-                return Tile.Plain;
-        }
-    }
-
-    private string tileToString(Tile tile)
-    {
-        switch (tile)
-        {
-            case Tile.Plain:
-                return "Plain Tile";
-            case Tile.Rocky:
-                return "Rocky Tile";
-            case Tile.Florest:
-                return "Florest Tile";
-            case Tile.Water:
-                return "Water Tile";
-            case Tile.Mountain:
-                return "Mountain Tile";
-            default:
-                return "Plain Tile";
+                return tileMaterials[0];
         }
     }
 }
