@@ -33,7 +33,7 @@ public class MapBuilder : MonoBehaviour
                 newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
                 newTile.name = tileMap[i,j].ToString();
 
-                tileMap[i,j].tile3D = newTile;
+                tileMap[i,j].tile3DRef = newTile;
             }
         }  
     }
@@ -72,6 +72,8 @@ public class MapBuilder : MonoBehaviour
                 return tileMaterials[3];
             case TileType.Mountain:
                 return tileMaterials[4];
+            case TileType.Event:
+                return tileMaterials[5];
             default:
                 return tileMaterials[0];
         }

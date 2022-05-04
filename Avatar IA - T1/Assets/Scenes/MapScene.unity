@@ -407,7 +407,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1555079155}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -538,6 +538,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: f7ba58a94925c46cd97f70cb227455d8, type: 2}
   - {fileID: 2100000, guid: 03b3a35ecb6814630ae012c283431988, type: 2}
   - {fileID: 2100000, guid: de7a05922ae1f4b63a5642cb958cd76b, type: 2}
+  - {fileID: 2100000, guid: 393d53d6e40354cdfa012a595b82d095, type: 2}
   tilesDistance: 10
 --- !u!4 &1573833539
 Transform:
