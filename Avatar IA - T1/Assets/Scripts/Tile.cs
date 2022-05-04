@@ -65,6 +65,11 @@ public class Tile
         return 0;
     }
 
+    public static int compareByEventID(Tile a, Tile b)
+    {
+        return a.eventID - b.eventID;
+    }
+
     public override string ToString()
     {
         return "Tile (" + xRef.ToString() + " , " + yRef.ToString() + ") - " + timeCost.ToString();

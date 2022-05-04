@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
+    //model properties (will be set after Start method)
     Tile[,] tileMap;
+    List<Tile> eventTiles;
+
+    //other 
     private const string fileName = "Assets/Resources/text.txt";
     public GameObject baseTile;
     public List<Material> tileMaterials;
     public float tilesDistance = 10;
+
     void Start()
     {
-        tileMap = textToTileMap(fileName);
+        (tileMap, eventTiles) = textToTileMap(fileName);
         renderTileMap(tileMap);
+        eventTiles.Sort(Tile.compareByEventID);
     }
 
     private void renderTileMap(Tile[,] tileMap)
@@ -38,7 +44,8 @@ public class MapBuilder : MonoBehaviour
         }  
     }
 
-    private Tile[,] textToTileMap(string fileName)
+    //returns both tileMap and a list of its events
+    private (Tile[,], List<Tile>) textToTileMap(string fileName)
     {
         //read all lines of .txt
         string[] lines = System.IO.File.ReadAllLines(fileName);
@@ -47,15 +54,18 @@ public class MapBuilder : MonoBehaviour
 
         //new tile map matrix
         Tile[,] tileMap = new Tile[nLines,charPerLine];
+        List<Tile> eventTiles = new List<Tile>();
 
         for (int i = 0; i < nLines; i++) //each line
         {
             for (int j = 0; j < charPerLine; j++) //each char in line
             {
-                tileMap[i,j] = new Tile(lines[i][j], i, j); //create new tile
+                tileMap[i,j] = new Tile(lines[i][j], j, i); //create new tile
+                if (tileMap[i,j].type == TileType.Event)
+                    eventTiles.Add(tileMap[i,j]);
             }
         }   
-        return tileMap;
+        return (tileMap, eventTiles);
     }
 
     private Material tileTypeToMaterial(TileType type)
