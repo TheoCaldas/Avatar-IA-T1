@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
-    //model properties (will be set after Start method)
-    Tile[,] tileMap;
-    List<Tile> eventTiles;
-
-    //other 
     private const string fileName = "Assets/Resources/text.txt";
     public GameObject baseTile;
     public List<Material> tileMaterials;
@@ -19,9 +14,9 @@ public class MapBuilder : MonoBehaviour
 
     void Start()
     {
-        (tileMap, eventTiles) = textToTileMap(fileName);
-        renderTileMap(tileMap);
-        eventTiles.Sort(Tile.compareByEventID);
+        (MapManager.Instance.tileMap, MapManager.Instance.eventTiles) = textToTileMap(fileName);
+        renderTileMap(MapManager.Instance.tileMap);
+        MapManager.Instance.eventTiles.Sort(Tile.compareByEventID);
     }
 
     private void renderTileMap(Tile[,] tileMap)
