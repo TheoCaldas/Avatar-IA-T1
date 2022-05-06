@@ -13,6 +13,9 @@ public class MapBuilder : MonoBehaviour
     public GameObject baseTile;
     public List<Material> tileMaterials;
     public float tilesDistance = 10;
+    
+    [SerializeField]
+    private GameObject plainTile;
 
     void Start()
     {
@@ -32,12 +35,24 @@ public class MapBuilder : MonoBehaviour
             for (int j = 0; j < n; j++)
             {
                 //copy base tile and reflect it to tileMap[i,j]
-                GameObject newTile = Instantiate(baseTile);
-                newTile.SetActive(true);
-                newTile.transform.SetParent(transform);
-                newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
-                newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
-                newTile.name = tileMap[i,j].ToString();
+                GameObject newTile;
+                if (tileMap[i, j].type == TileType.Plain)
+                {
+                    newTile = Instantiate(plainTile,transform);
+                    newTile.SetActive(true);
+                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                    newTile.name = tileMap[i,j].ToString();
+                }
+                else
+                {
+                    newTile = Instantiate(baseTile);
+                    newTile.SetActive(true);
+                    newTile.transform.SetParent(transform);
+                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                    newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
+                    newTile.name = tileMap[i,j].ToString();
+                }
+                
 
                 tileMap[i,j].tile3DRef = newTile;
             }
