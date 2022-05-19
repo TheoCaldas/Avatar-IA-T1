@@ -17,6 +17,7 @@ public class MapBuilder : MonoBehaviour
         (MapManager.Instance.tileMap, MapManager.Instance.eventTiles) = textToTileMap(fileName);
         renderTileMap(MapManager.Instance.tileMap);
         MapManager.Instance.eventTiles.Sort(Tile.compareByEventID);
+        MapManager.Instance.StartPathFinding();
     }
 
     private void renderTileMap(Tile[,] tileMap)

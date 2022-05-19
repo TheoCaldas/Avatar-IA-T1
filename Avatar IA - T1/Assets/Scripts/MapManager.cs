@@ -9,12 +9,8 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     public (int, int) currentPosition = new (0, 0);
 
-    private void Start() {
+    public void StartPathFinding() {
         AStar algo = new AStar();
-        algo.aStar(new Tile('A', 0, 0), new Tile('A', 0, 0));
-    }
-
-    private void Update() {
-        
+        algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
     }
 }
