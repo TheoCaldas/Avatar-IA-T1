@@ -18,11 +18,11 @@ public class AStar
 
         if (leftX >= 0)
             neighbours.Add(tileMap[y, leftX]);
-        if (rightX < m)
+        if (rightX < n)
             neighbours.Add(tileMap[y, rightX]);
         if (upY >= 0)
             neighbours.Add(tileMap[upY, x]);
-        if (downY < n)
+        if (downY < m)
             neighbours.Add(tileMap[downY, x]);
         
         return neighbours;
@@ -104,7 +104,7 @@ public class AStar
     public List<Tile> aStar(Tile[,] tileMap, Tile startTile, Tile endTile)
     {
         //get x and y dimensions
-        int m = tileMap.GetLength(0); //TO DO: is m inverted with n?
+        int m = tileMap.GetLength(0);
         int n = tileMap.GetLength(1);
         int capacity = m * n;
         int maxDistance = int.MaxValue; //arbitrary large
