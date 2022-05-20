@@ -19,7 +19,9 @@ public class Tile
     public int timeCost;
     public int eventID;
 
-    public GameObject tile3DRef; //TO DO: need to be here?
+    //References to tile object in scene
+    public GameObject tile3DRef;
+    public Material originalMaterial;
 
     public Tile(char caracter, int x, int y)
     {
@@ -73,5 +75,18 @@ public class Tile
     public override string ToString()
     {
         return "Tile (" + xRef.ToString() + " , " + yRef.ToString() + ") - " + timeCost.ToString();
+    }
+
+    public void changeColor(Color color)
+    {
+        MeshRenderer r = tile3DRef.GetComponentInChildren<MeshRenderer>();
+        r.material.SetColor("_BaseColor", color);
+        if (type == TileType.Water)
+            r.material.SetColor("_DeepColor", color);
+    }
+
+    public void revertColor()
+    {
+        tile3DRef.GetComponentInChildren<MeshRenderer>().material = originalMaterial;
     }
 }

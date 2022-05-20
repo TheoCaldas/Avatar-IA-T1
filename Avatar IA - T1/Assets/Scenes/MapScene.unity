@@ -2770,6 +2770,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualizeColors: []
   character: {fileID: 581531933}
+  followPathTimeFactor: 0.5
+  visualizerTimeFactor: 0.3
 --- !u!4 &657728816
 Transform:
   m_ObjectHideFlags: 0

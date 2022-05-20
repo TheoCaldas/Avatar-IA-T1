@@ -48,7 +48,7 @@ public class MapBuilder : MonoBehaviour
                     newTile.name = tileMap[i,j].ToString();
                 }
                 
-
+                tileMap[i,j].originalMaterial = Instantiate(newTile.GetComponentInChildren<Renderer>().material);
                 tileMap[i,j].tile3DRef = newTile;
             }
         }  

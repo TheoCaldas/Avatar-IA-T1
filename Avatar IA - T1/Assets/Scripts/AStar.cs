@@ -34,6 +34,7 @@ public class AStar
         Tile current = endTile;
         while (current != startTile)
         {
+            addToVisualizeQueue(current, Color.green);
             path.Insert(0, current);
             current = predecessor[current];
         }

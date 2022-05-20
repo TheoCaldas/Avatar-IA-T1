@@ -6,7 +6,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 {
     //Tile matrix that represents the map
     [HideInInspector] public Tile[,] tileMap;
-    //Tiles that are objectives (should be sorted)
+    //Tiles that are objectives (should be sorted when set)
     [HideInInspector] public List<Tile> eventTiles;
 
     //List of colors changes in tiles to help visualing the algorithm
@@ -15,6 +15,9 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     //Reference to character in scene
     public GameObject character;
+    //Time factors
+    public float followPathTimeFactor = 0.5f;
+    public float visualizerTimeFactor = 0.5f;
 
     public void StartPathFinding() {
         changePosition(eventTiles[0]);
@@ -24,38 +27,42 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
         foreach (Tile tile in shortestPath)
             Debug.Log(tile);
+        
+        StartCoroutine(VisualizeThenFollow(shortestPath));
+    }
 
-        for (int i = 0; i < visualizeColors.Count; i++)
-            StartCoroutine(Visualize(visualizeColors[i], visualizeTiles[i], i + 1));
-
+    IEnumerator VisualizeThenFollow(List<Tile> path)
+    {
+        yield return Visualize();
         if (character != null)
-            StartCoroutine(FollowPath(shortestPath));
+            yield return FollowPath(path);
     }
 
     IEnumerator FollowPath(List<Tile> path)
     {   
-        float timeInterval = 0.5f;
-        yield return new WaitForSeconds(9.0f); 
+        //TO DO: Make reflect tile cost
         foreach (Tile tile in path)
         {
-            yield return new WaitForSeconds(timeInterval);
+            yield return new WaitForSeconds(followPathTimeFactor);
             changePosition(tile);
         }
     }
 
-    IEnumerator Visualize(Color color, Tile tile, int index)
+    IEnumerator Visualize()
     {
-        float timeInterval = 0.5f;
-        yield return new WaitForSeconds(index * timeInterval); 
-        changeColor(color, tile);
-    }
+        for (int i = 0; i < visualizeColors.Count; i++)
+        {
+            yield return new WaitForSeconds(visualizerTimeFactor); 
+            visualizeTiles[i].changeColor(visualizeColors[i]);
+        }
 
-    void changeColor(Color color, Tile tile)
-    {
-        MeshRenderer r = tile.tile3DRef.GetComponentInChildren<MeshRenderer>();
-        r.material.SetColor("_BaseColor", color);
-        if (tile.type == TileType.Water)
-            r.material.SetColor("_DeepColor", color);
+        //clean visualiztion
+        yield return new WaitForSeconds(visualizerTimeFactor);
+        foreach (Tile tile in visualizeTiles)
+            tile.revertColor();
+
+        visualizeColors.Clear();
+        visualizeTiles.Clear();
     }
 
     void changePosition(Tile tile)
