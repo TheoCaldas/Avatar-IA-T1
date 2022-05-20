@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
-    private const string fileName = "Assets/Resources/test1.txt";
+    private const string fileName = "Assets/Resources/test3.txt";
     public GameObject baseTile;
     public List<Material> tileMaterials;
     public float tilesDistance = 10;

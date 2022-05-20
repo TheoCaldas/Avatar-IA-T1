@@ -2771,7 +2771,7 @@ MonoBehaviour:
   visualizeColors: []
   character: {fileID: 581531933}
   followPathTimeFactor: 0.1
-  visualizerTimeFactor: 0.00001
+  visualizerTimeFactor: 1e-12
 --- !u!4 &657728816
 Transform:
   m_ObjectHideFlags: 0

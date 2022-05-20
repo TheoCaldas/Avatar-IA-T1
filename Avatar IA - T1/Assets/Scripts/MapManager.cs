@@ -16,21 +16,26 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     //Reference to character in scene
     public GameObject character;
     //Time factors
-    public float followPathTimeFactor = 0.5f;
+    public float followPathTimeFactor = 0.5f; //TO DO: Change time interval to updates per frame
     public float visualizerTimeFactor = 0.5f;
 
     public void StartPathFinding() {
         changePosition(eventTiles[0]);
-        AStar algo = new AStar();
+        StartCoroutine(FindAllPaths());
+    }
 
-        float temp = Time.realtimeSinceStartup;
-        List<Tile> shortestPath = algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
-        Debug.Log("Did find path! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+    IEnumerator FindAllPaths()
+    {
+        AStar algh = new AStar();
+        for (int i = 0; i < eventTiles.Count - 1; i++)
+        {
+            float temp = Time.realtimeSinceStartup;
+            List<Tile> shortestPath = algh.aStar(tileMap, eventTiles[i], eventTiles[i + 1]);
+            Debug.Log("Did find path from event " + eventTiles[i].eventID.ToString() + 
+            " to event " + eventTiles[i + 1].eventID.ToString() + "! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
-        // // foreach (Tile tile in shortestPath)
-        // //     Debug.Log(tile);
-        
-        StartCoroutine(VisualizeThenFollow(shortestPath));
+            yield return VisualizeThenFollow(shortestPath);
+        }
     }
 
     IEnumerator VisualizeThenFollow(List<Tile> path)
