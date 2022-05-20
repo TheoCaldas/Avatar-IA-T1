@@ -109,7 +109,8 @@ public class AStar
         int capacity = m * n;
         int maxDistance = int.MaxValue; //arbitrary large
 
-        Dictionary<Tile, int> distance = new Dictionary<Tile, int>(); //distances estimative from startTile
+        Dictionary<Tile, int> fCosts = new Dictionary<Tile, int>(); //gCost + distance to endTile (heuristic)
+        Dictionary<Tile, int> gCosts = new Dictionary<Tile, int>(); //distances estimative from startTile
         Dictionary<Tile, Tile> predecessor = new Dictionary<Tile, Tile>(); //antecessors for each tile
         Dictionary<Tile, bool> hasBeenVisited = new Dictionary<Tile, bool>(); //if tile has been explored
         BinaryHeap<int, Tile> queue = new BinaryHeap<int, Tile>(capacity, -1, maxDistance);
@@ -118,14 +119,15 @@ public class AStar
         {
             for (int j = 0; j < n; j++)
             {
-                distance[tileMap[i,j]] = int.MaxValue;
+                fCosts[tileMap[i,j]] = int.MaxValue;
                 predecessor[tileMap[i,j]] = null;
                 hasBeenVisited[tileMap[i,j]] = false;
             }
         }
 
-        distance[startTile] = 0;
-        queue.Enqueue(startTile, distance[startTile]);
+        fCosts[startTile] = 0;
+        gCosts[startTile] = 0;
+        queue.Enqueue(startTile, fCosts[startTile]);
 
         while (queue.Count() > 0)
         {
@@ -139,14 +141,16 @@ public class AStar
 
                 foreach(Tile neighbour in neighbours)
                 {
-                    int sum = distance[tile] + neighbour.timeCost + calculateHCost(endTile, neighbour);
-                    // Debug.Log(neighbour.ToString() + " -> " + sum);
-                    if (distance[neighbour] > sum)
+                    int hCost = calculateHCost(endTile, neighbour);
+                    int gCost = gCosts[tile] + neighbour.timeCost;
+
+                    if (fCosts[neighbour] > gCost + hCost)
                     {
                         addToVisualizeQueue(neighbour, Color.yellow);
 
-                        distance[neighbour] = sum;
-                        queue.Enqueue(neighbour, distance[neighbour]);
+                        fCosts[neighbour] = gCost + hCost;
+                        gCosts[neighbour] = gCost;
+                        queue.Enqueue(neighbour, fCosts[neighbour]);
                         predecessor[neighbour] = tile;
 
                         if (neighbour == endTile)
