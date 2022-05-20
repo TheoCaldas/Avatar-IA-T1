@@ -5,16 +5,16 @@ using UnityEngine;
 public class MapManager: SingletonMonoBehaviour<MapManager>
 {
     //Tile matrix that represents the map
-    public Tile[,] tileMap;
+    [HideInInspector] public Tile[,] tileMap;
     //Tiles that are objectives (should be sorted)
-    public List<Tile> eventTiles;
-
-    //Reference to character position
-    public (int, int) currentPosition = new (0, 0);
+    [HideInInspector] public List<Tile> eventTiles;
 
     //List of colors changes in tiles to help visualing the algorithm
-    public List<Color> visualizeColors = new List<Color>();
-    public List<Tile> visualizeTiles = new List<Tile>();
+    [HideInInspector] public List<Color> visualizeColors = new List<Color>();
+    [HideInInspector] public List<Tile> visualizeTiles = new List<Tile>();
+
+    //Reference to character in scene
+    public GameObject character;
 
     public void StartPathFinding() {
         AStar algo = new AStar();
@@ -25,11 +25,26 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
         for (int i = 0; i < visualizeColors.Count; i++)
             StartCoroutine(Visualize(visualizeColors[i], visualizeTiles[i], i + 1));
+
+        if (character != null)
+            StartCoroutine(FollowPath(shortestPath));
+    }
+
+    IEnumerator FollowPath(List<Tile> path)
+    {   
+        float timeInterval = 0.5f;
+        yield return new WaitForSeconds(9.0f); 
+        foreach (Tile tile in path)
+        {
+            yield return new WaitForSeconds(timeInterval);
+            Vector3 tilePosition = tile.tile3DRef.transform.position;
+            character.transform.position = new Vector3(tilePosition.x, character.transform.position.y, tilePosition.z);
+        }
     }
 
     IEnumerator Visualize(Color color, Tile tile, int index)
     {
-        float timeInterval = 1.0f;
+        float timeInterval = 0.5f;
         yield return new WaitForSeconds(index * timeInterval); 
         changeColor(color, tile);
     }

@@ -2768,6 +2768,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51622c3173d7b4949b4cfe263cf15435, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  visualizeColors: []
+  character: {fileID: 581531933}
 --- !u!4 &657728816
 Transform:
   m_ObjectHideFlags: 0
