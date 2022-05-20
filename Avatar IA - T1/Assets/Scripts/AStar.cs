@@ -17,13 +17,13 @@ public class AStar
         int downY = y + 1;
 
         if (leftX >= 0)
-            neighbours.Add(tileMap[leftX, y]);
+            neighbours.Add(tileMap[y, leftX]);
         if (rightX < m)
-            neighbours.Add(tileMap[rightX, y]);
+            neighbours.Add(tileMap[y, rightX]);
         if (upY >= 0)
-            neighbours.Add(tileMap[x, upY]);
+            neighbours.Add(tileMap[upY, x]);
         if (downY < n)
-            neighbours.Add(tileMap[x, downY]);
+            neighbours.Add(tileMap[downY, x]);
         
         return neighbours;
     }
@@ -103,7 +103,7 @@ public class AStar
     public List<Tile> aStar(Tile[,] tileMap, Tile startTile, Tile endTile)
     {
         //get x and y dimensions
-        int m = tileMap.GetLength(0);
+        int m = tileMap.GetLength(0); //TO DO: is m inverted with n?
         int n = tileMap.GetLength(1);
         int capacity = m * n;
         int maxDistance = 2000000; //arbitrary large
@@ -131,16 +131,18 @@ public class AStar
             Tile tile = queue.Dequeue();
             if (!hasBeenVisited[tile])
             {
-                // changeColor(Color.red, tile);
+                addToVisualizeQueue(tile, Color.red);
+
                 hasBeenVisited[tile] = true;
                 List<Tile> neighbours = getNeighbours(tile, m, n, tileMap);
 
                 foreach(Tile neighbour in neighbours)
                 {
-                    // Debug.Log(tile.ToString() + "->" + neighbour.ToString());
                     int sum = distance[tile] + neighbour.timeCost;
                     if (distance[neighbour] > sum)
                     {
+                        addToVisualizeQueue(neighbour, Color.yellow);
+
                         distance[neighbour] = sum;
                         queue.Enqueue(neighbour, distance[neighbour]);
                         predecessor[neighbour] = tile;
@@ -155,12 +157,9 @@ public class AStar
         return null;
     }
 
-    void changeColor(Color color, Tile tile)
+    void addToVisualizeQueue(Tile tile, Color color)
     {
-        MeshRenderer r = tile.tile3DRef.GetComponent<MeshRenderer>();
-        r.material.SetColor("_BaseColor", color);
-        // Color newColor = r.material.color;
-        // newColor.a = a;
-        // r.material.color = newColor;
+        MapManager.Instance.visualizeTiles.Add(tile);
+        MapManager.Instance.visualizeColors.Add(color);
     }
 }
