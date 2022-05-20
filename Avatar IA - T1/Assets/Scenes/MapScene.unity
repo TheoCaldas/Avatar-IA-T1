@@ -3051,7 +3051,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 2000
   field of view: 60.000004
   orthographic: 0
   orthographic size: 5
@@ -3077,14 +3077,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.21263108, y: -0.67437977, z: 0.21263108, w: 0.67437977}
-  m_LocalPosition: {x: 56.1, y: 25.4, z: 13.9}
+  m_LocalRotation: {x: 0.3535534, y: -0.61237246, z: 0.3535534, w: 0.61237246}
+  m_LocalPosition: {x: 1368, y: 1467, z: 1483}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 35, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: -90, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3791,10 +3791,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseTile: {fileID: 1555079155}
   tileMaterials:
-  - {fileID: 2100000, guid: 68ca741c45bce4cf6992c562e2a9fedc, type: 2}
+  - {fileID: 2100000, guid: 6b4f31aa1458147c79571f5ca2295ca9, type: 2}
   - {fileID: 2100000, guid: 975392913fed2447d8b81d60ae463e51, type: 2}
   - {fileID: 2100000, guid: f7ba58a94925c46cd97f70cb227455d8, type: 2}
-  - {fileID: 2100000, guid: ef804b6e1aa134f46b408250c880b1db, type: 2}
+  - {fileID: 2100000, guid: 03b3a35ecb6814630ae012c283431988, type: 2}
   - {fileID: 2100000, guid: de7a05922ae1f4b63a5642cb958cd76b, type: 2}
   - {fileID: 2100000, guid: 393d53d6e40354cdfa012a595b82d095, type: 2}
   tilesDistance: 10
