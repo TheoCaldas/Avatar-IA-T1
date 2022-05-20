@@ -21,7 +21,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
         AStar algo = new AStar();
         List<Tile> shortestPath = algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
-        
+
         foreach (Tile tile in shortestPath)
             Debug.Log(tile);
 
@@ -54,6 +54,8 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     {
         MeshRenderer r = tile.tile3DRef.GetComponentInChildren<MeshRenderer>();
         r.material.SetColor("_BaseColor", color);
+        if (tile.type == TileType.Water)
+            r.material.SetColor("_DeepColor", color);
     }
 
     void changePosition(Tile tile)
