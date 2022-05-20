@@ -28,11 +28,22 @@ public class AStar
         return neighbours;
     }
 
-    public void aStar(Tile[,] tileMap, Tile startTile, Tile endTile)
+    private List<Tile> convertToList(Dictionary<Tile, Tile> predecessor, Tile startTile, Tile endTile)
     {
-        Debug.Log(startTile);
-        Debug.Log(endTile);
+        List<Tile> path = new List<Tile>();
+        Tile current = endTile;
+        while (current != startTile)
+        {
+            path.Insert(0, current);
+            current = predecessor[current];
+        }
 
+        return path;
+    }
+
+    //returns predecessor hashMap for all tiles
+    public Dictionary<Tile, Tile> aStar(Tile[,] tileMap, Tile startTile)
+    {
         //get x and y dimensions
         int m = tileMap.GetLength(0);
         int n = tileMap.GetLength(1);
@@ -79,10 +90,77 @@ public class AStar
             }
         }
 
-        foreach (KeyValuePair<Tile, int> kvp in distance)
-            Debug.Log(kvp);
+        // foreach (KeyValuePair<Tile, int> kvp in distance)
+        //     Debug.Log(kvp);
 
-        foreach (KeyValuePair<Tile, Tile> kvp in predecessor)
-            Debug.Log(kvp);
+        // foreach (KeyValuePair<Tile, Tile> kvp in predecessor)
+        //     Debug.Log(kvp);
+
+        return predecessor;
+    }
+
+    //returns path list from start to end
+    public List<Tile> aStar(Tile[,] tileMap, Tile startTile, Tile endTile)
+    {
+        //get x and y dimensions
+        int m = tileMap.GetLength(0);
+        int n = tileMap.GetLength(1);
+        int capacity = m * n;
+        int maxDistance = 2000000; //arbitrary large
+
+        Dictionary<Tile, int> distance = new Dictionary<Tile, int>(); //distances estimative from startTile
+        Dictionary<Tile, Tile> predecessor = new Dictionary<Tile, Tile>(); //antecessors for each tile
+        Dictionary<Tile, bool> hasBeenVisited = new Dictionary<Tile, bool>(); //if tile has been explored
+        BinaryHeap<int, Tile> queue = new BinaryHeap<int, Tile>(capacity, -1, maxDistance);
+        
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                distance[tileMap[i,j]] = int.MaxValue;
+                predecessor[tileMap[i,j]] = null;
+                hasBeenVisited[tileMap[i,j]] = false;
+            }
+        }
+
+        distance[startTile] = 0;
+        queue.Enqueue(startTile, distance[startTile]);
+
+        while (queue.Count() > 0)
+        {
+            Tile tile = queue.Dequeue();
+            if (!hasBeenVisited[tile])
+            {
+                // changeColor(Color.red, tile);
+                hasBeenVisited[tile] = true;
+                List<Tile> neighbours = getNeighbours(tile, m, n, tileMap);
+
+                foreach(Tile neighbour in neighbours)
+                {
+                    // Debug.Log(tile.ToString() + "->" + neighbour.ToString());
+                    int sum = distance[tile] + neighbour.timeCost;
+                    if (distance[neighbour] > sum)
+                    {
+                        distance[neighbour] = sum;
+                        queue.Enqueue(neighbour, distance[neighbour]);
+                        predecessor[neighbour] = tile;
+
+                        if (neighbour == endTile)
+                            return convertToList(predecessor, startTile, endTile);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    void changeColor(Color color, Tile tile)
+    {
+        MeshRenderer r = tile.tile3DRef.GetComponent<MeshRenderer>();
+        r.material.SetColor("_BaseColor", color);
+        // Color newColor = r.material.color;
+        // newColor.a = a;
+        // r.material.color = newColor;
     }
 }

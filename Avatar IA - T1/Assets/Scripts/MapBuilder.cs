@@ -41,9 +41,8 @@ public class MapBuilder : MonoBehaviour
                 }
                 else
                 {
-                    newTile = Instantiate(baseTile);
+                    newTile = Instantiate(baseTile, transform);
                     newTile.SetActive(true);
-                    newTile.transform.SetParent(transform);
                     newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
                     newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
                     newTile.name = tileMap[i,j].ToString();

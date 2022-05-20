@@ -11,6 +11,9 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     public void StartPathFinding() {
         AStar algo = new AStar();
-        algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
+        // Dictionary<Tile, Tile> predecessors = algo.aStar(tileMap, eventTiles[0]);
+        List<Tile> shortestPath = algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
+        foreach (Tile tile in shortestPath)
+            Debug.Log(tile);
     }
 }
