@@ -21,12 +21,14 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     public void StartPathFinding() {
         changePosition(eventTiles[0]);
-
         AStar algo = new AStar();
-        List<Tile> shortestPath = algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
 
-        foreach (Tile tile in shortestPath)
-            Debug.Log(tile);
+        float temp = Time.realtimeSinceStartup;
+        List<Tile> shortestPath = algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
+        Debug.Log("Did find path! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+
+        // // foreach (Tile tile in shortestPath)
+        // //     Debug.Log(tile);
         
         StartCoroutine(VisualizeThenFollow(shortestPath));
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
-    private const string fileName = "Assets/Resources/text.txt";
+    private const string fileName = "Assets/Resources/test1.txt";
     public GameObject baseTile;
     public List<Material> tileMaterials;
     public float tilesDistance = 10;
@@ -14,8 +14,16 @@ public class MapBuilder : MonoBehaviour
 
     void Start()
     {
+        float temp;
+
+        temp = Time.realtimeSinceStartup;
         (MapManager.Instance.tileMap, MapManager.Instance.eventTiles) = textToTileMap(fileName);
+        Debug.Log("Did construct map! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+
+        temp = Time.realtimeSinceStartup;
         renderTileMap(MapManager.Instance.tileMap);
+        Debug.Log("Did render map! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+
         MapManager.Instance.eventTiles.Sort(Tile.compareByEventID);
         MapManager.Instance.StartPathFinding();
     }
