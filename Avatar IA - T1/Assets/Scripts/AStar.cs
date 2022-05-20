@@ -139,7 +139,7 @@ public class AStar
 
                 foreach(Tile neighbour in neighbours)
                 {
-                    int sum = distance[tile] + neighbour.timeCost;
+                    int sum = distance[tile] + neighbour.timeCost + calculateHCost(endTile, neighbour);
                     if (distance[neighbour] > sum)
                     {
                         addToVisualizeQueue(neighbour, Color.yellow);
@@ -162,5 +162,12 @@ public class AStar
     {
         MapManager.Instance.visualizeTiles.Add(tile);
         MapManager.Instance.visualizeColors.Add(color);
+    }
+
+    int calculateHCost(Tile a, Tile b)
+    {
+        int deltaX = Mathf.Abs(a.xRef - b.xRef);
+        int deltaY = Mathf.Abs(a.yRef - b.yRef);
+        return deltaX + deltaY;
     }
 }
