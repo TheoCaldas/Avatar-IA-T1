@@ -28,8 +28,14 @@ public class Tile
         xRef = x;
         yRef = y;
         type = charToTileType(caracter);
-        timeCost = (type != TileType.Event) ? (int) type : charToEventCost(caracter);
-        eventID = (type != TileType.Event) ? -1 : timeCost;
+        timeCost = (int) type;
+        eventID = -1;
+
+        if (type == TileType.Event)
+        {
+            eventID = charToEventID(caracter);
+            timeCost = eventID * 10;
+        }
     }
 
     private TileType charToTileType(char c)
@@ -51,8 +57,7 @@ public class Tile
         }
     }
 
-    //TO DO: Match cost with definition table
-    private int charToEventCost(char c) //cost equals event number, skips A, F, M, R
+    private int charToEventID(char c) //cost equals event number, skips A, F, M, R
     {
         if (c >= '0' && c <= '9')
             return c - '0';
