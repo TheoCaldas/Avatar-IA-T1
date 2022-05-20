@@ -17,9 +17,11 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     public GameObject character;
 
     public void StartPathFinding() {
+        changePosition(eventTiles[0]);
+
         AStar algo = new AStar();
-        // Dictionary<Tile, Tile> predecessors = algo.aStar(tileMap, eventTiles[0]);
         List<Tile> shortestPath = algo.aStar(tileMap, eventTiles[0], eventTiles[1]);
+        
         foreach (Tile tile in shortestPath)
             Debug.Log(tile);
 
@@ -37,8 +39,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         foreach (Tile tile in path)
         {
             yield return new WaitForSeconds(timeInterval);
-            Vector3 tilePosition = tile.tile3DRef.transform.position;
-            character.transform.position = new Vector3(tilePosition.x, character.transform.position.y, tilePosition.z);
+            changePosition(tile);
         }
     }
 
@@ -53,5 +54,11 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     {
         MeshRenderer r = tile.tile3DRef.GetComponentInChildren<MeshRenderer>();
         r.material.SetColor("_BaseColor", color);
+    }
+
+    void changePosition(Tile tile)
+    {
+        Vector3 tilePosition = tile.tile3DRef.transform.position;
+        character.transform.position = new Vector3(tilePosition.x, character.transform.position.y, tilePosition.z);
     }
 }
