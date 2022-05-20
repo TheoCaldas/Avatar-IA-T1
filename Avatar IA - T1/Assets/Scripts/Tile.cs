@@ -40,7 +40,7 @@ public class Tile
                 return TileType.Plain;
             case 'R':
                 return TileType.Rocky;
-            case 'V':
+            case 'F':
                 return TileType.Florest;
             case 'A':
                 return TileType.Water;
@@ -52,18 +52,18 @@ public class Tile
     }
 
     //TO DO: Match cost with definition table
-    private int charToEventCost(char c) //cost equals event number, skips A, R, M, V
+    private int charToEventCost(char c) //cost equals event number, skips A, F, M, R
     {
         if (c >= '0' && c <= '9')
             return c - '0';
-        if (c >= 'B' && c <= 'L')
+        if (c >= 'B' && c <= 'E')
             return c - 'B' + 10;
+        if (c >= 'G' && c <= 'L')
+            return c - 'G' + 14;
         if (c >= 'N' && c <= 'Q')
-            return c - 'N' + 21;
-        if (c >= 'S' && c <= 'U')
-            return c - 'S' + 25;
-        if (c >= 'W' && c <= 'Z')
-            return c - 'W' + 28;
+            return c - 'N' + 20;
+        if (c >= 'S' && c <= 'Z')
+            return c - 'S' + 24;
         return 0;
     }
 

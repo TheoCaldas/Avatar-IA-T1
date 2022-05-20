@@ -107,7 +107,7 @@ public class AStar
         int m = tileMap.GetLength(0); //TO DO: is m inverted with n?
         int n = tileMap.GetLength(1);
         int capacity = m * n;
-        int maxDistance = 2000000; //arbitrary large
+        int maxDistance = int.MaxValue; //arbitrary large
 
         Dictionary<Tile, int> distance = new Dictionary<Tile, int>(); //distances estimative from startTile
         Dictionary<Tile, Tile> predecessor = new Dictionary<Tile, Tile>(); //antecessors for each tile
