@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
-    private const string fileName = "Assets/Resources/test6.txt";
+    private const string fileName = "Assets/Resources/mapa.txt";
     public GameObject baseTile;
     public List<Material> tileMaterials;
     public float tilesDistance = 10;
@@ -33,7 +33,7 @@ public class MapBuilder : MonoBehaviour
         //get x and y dimensions
         int m = tileMap.GetLength(0);
         int n = tileMap.GetLength(1);
-        Debug.Log("M = " + m.ToString() + ", N  = " + n.ToString());
+        // Debug.Log("M = " + m.ToString() + ", N  = " + n.ToString());
 
         for (int i = 0; i < m; i++)
         {

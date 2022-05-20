@@ -13,7 +13,9 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     [HideInInspector] public List<Color> visualizeColors = new List<Color>();
     [HideInInspector] public List<Tile> visualizeTiles = new List<Tile>();
 
+    //Algorithm measures
     private float pathCost = 0.0f;
+    private float totalCost = 0.0f; //sum of all path costs
 
     //Reference to character in scene
     public GameObject character;
@@ -23,10 +25,29 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     public void StartPathFinding() {
         changePosition(eventTiles[0]);
-        StartCoroutine(FindAllPaths());
+        StartCoroutine(FindAllPathsVisualization());
+        // findAllPaths();
     }
 
-    IEnumerator FindAllPaths()
+    void findAllPaths()
+    {
+        AStar algh = new AStar();
+        for (int i = 0; i < eventTiles.Count - 1; i++)
+        {
+            float temp = Time.realtimeSinceStartup;
+            List<Tile> shortestPath = algh.aStar(tileMap, eventTiles[i], eventTiles[i + 1]);
+            Debug.Log("Did find path from event " + eventTiles[i].eventID.ToString() + 
+            " to event " + eventTiles[i + 1].eventID.ToString() + "! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+            pathCost = 0.0f;
+            foreach (Tile tile in shortestPath)
+                pathCost += tile.timeCost;
+            Debug.Log("Path Cost: " + pathCost.ToString());
+            totalCost += pathCost;
+        }
+        Debug.Log("Total Cost: " + totalCost.ToString());
+    }
+
+    IEnumerator FindAllPathsVisualization()
     {
         AStar algh = new AStar();
         for (int i = 0; i < eventTiles.Count - 1; i++)
@@ -37,7 +58,9 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             " to event " + eventTiles[i + 1].eventID.ToString() + "! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
             yield return VisualizeThenFollow(shortestPath);
+            // yield return FollowPath(shortestPath);
         }
+        Debug.Log("Total Cost: " + totalCost.ToString());
     }
 
     IEnumerator VisualizeThenFollow(List<Tile> path)
@@ -58,6 +81,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             pathCost += tile.timeCost;
         }
         Debug.Log("Path Cost: " + pathCost.ToString());
+        totalCost += pathCost;
     }
 
     IEnumerator Visualize()
