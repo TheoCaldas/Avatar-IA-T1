@@ -13,6 +13,8 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     [HideInInspector] public List<Color> visualizeColors = new List<Color>();
     [HideInInspector] public List<Tile> visualizeTiles = new List<Tile>();
 
+    private float pathCost = 0.0f;
+
     //Reference to character in scene
     public GameObject character;
     //Time factors
@@ -48,11 +50,14 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     IEnumerator FollowPath(List<Tile> path)
     {   
         //TO DO: Make reflect tile cost
+        pathCost = 0.0f;
         foreach (Tile tile in path)
         {
             yield return new WaitForSeconds(followPathTimeFactor);
             changePosition(tile);
+            pathCost += tile.timeCost;
         }
+        Debug.Log("Path Cost: " + pathCost.ToString());
     }
 
     IEnumerator Visualize()
