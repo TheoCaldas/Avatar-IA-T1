@@ -141,6 +141,9 @@ public class AStar
 
                 foreach(Tile neighbour in neighbours)
                 {
+                    if (neighbour.type == TileType.Event && neighbour != endTile)
+                        continue;
+
                     int hCost = calculateHCost(endTile, neighbour);
                     int gCost = gCosts[tile] + neighbour.timeCost;
 
