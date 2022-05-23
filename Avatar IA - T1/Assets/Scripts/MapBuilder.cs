@@ -11,6 +11,10 @@ public class MapBuilder : MonoBehaviour
     
     [SerializeField]
     private GameObject plainTile;
+    [SerializeField]
+    private GameObject forestTile;
+    [SerializeField]
+    private GameObject oceanBlock;
 
     void Start()
     {
@@ -41,26 +45,34 @@ public class MapBuilder : MonoBehaviour
             {
                 //copy base tile and reflect it to tileMap[i,j]
                 GameObject newTile;
-                // if (tileMap[i, j].type == TileType.Plain)
-                // {
-                //     newTile = Instantiate(plainTile,transform);
-                //     newTile.SetActive(true);
-                //     newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
-                //     newTile.name = tileMap[i,j].ToString();
-                // }
-                // else
-                // {
+                if (tileMap[i, j].type == TileType.Plain)
+                {
+                    newTile = Instantiate(plainTile,transform);
+                    newTile.SetActive(true);
+                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                    newTile.name = tileMap[i,j].ToString();
+                }
+                else if (tileMap[i, j].type == TileType.Florest)
+                {
+                    newTile = Instantiate(forestTile,transform);
+                    newTile.SetActive(true);
+                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                    newTile.name = tileMap[i,j].ToString();
+                }
+                else
+                {
                     newTile = Instantiate(baseTile, transform);
                     newTile.SetActive(true);
                     newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
                     newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
                     newTile.name = tileMap[i,j].ToString();
-                // }
+                }
                 
                 tileMap[i,j].originalMaterial = Instantiate(newTile.GetComponentInChildren<Renderer>().material);
                 tileMap[i,j].tile3DRef = newTile;
             }
-        }  
+        }
+        oceanBlock.SetActive(true);
     }
 
     //returns both tileMap and a list of its events

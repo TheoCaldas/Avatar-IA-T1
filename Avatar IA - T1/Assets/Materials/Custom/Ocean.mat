@@ -134,8 +134,8 @@ Material:
     - _SpecularHighlights: 1
     - _SpecularSmoothness: 1
     - _SrcBlend: 1
-    - _SurfaceDistortionAmount: 0.242
-    - _SurfaceNoiseCutoff: 0.76
+    - _SurfaceDistortionAmount: 0.359
+    - _SurfaceNoiseCutoff: 0.789
     - _UVSec: 0
     - _WaveNormalScale: 0.5
     - _WaveSpeed: 0.1
