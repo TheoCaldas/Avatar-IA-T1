@@ -19,12 +19,16 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     //Reference to character in scene
     public GameObject character;
+
+    //Reference to objective in scene
+    public Transform objective;
     //Time factors
     public float followPathTimeFactor = 0.5f; //TO DO: Change time interval to updates per frame
     public float visualizerTimeFactor = 0.5f;
+    
 
     public void StartPathFinding() {
-        changePosition(eventTiles[0]);
+        changeObjectPosition(eventTiles[0], character.transform);
         StartCoroutine(FindAllPathsVisualization());
         // findAllPaths();
     }
@@ -48,7 +52,8 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     }
 
     IEnumerator FindAllPathsVisualization()
-    {
+    {        
+        objective.GetComponent<ParticleSystem>().Play();
         AStar algh = new AStar();
         for (int i = 0; i < eventTiles.Count - 1; i++)
         {
@@ -57,6 +62,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             Debug.Log("Did find path from event " + eventTiles[i].eventID.ToString() + 
             " to event " + eventTiles[i + 1].eventID.ToString() + "! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
+            changeObjectPosition(eventTiles[i + 1], objective);
             yield return VisualizeThenFollow(shortestPath);
             // yield return FollowPath(shortestPath);
         }
@@ -77,7 +83,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         foreach (Tile tile in path)
         {
             yield return new WaitForSeconds(followPathTimeFactor);
-            changePosition(tile);
+            changeObjectPosition(tile, character.transform);
             pathCost += tile.timeCost;
         }
         Debug.Log("Path Cost: " + pathCost.ToString());
@@ -101,9 +107,9 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         visualizeTiles.Clear();
     }
 
-    void changePosition(Tile tile)
+    void changeObjectPosition(Tile tile, Transform transform)
     {
         Vector3 tilePosition = tile.tile3DRef.transform.position;
-        character.transform.position = new Vector3(tilePosition.x, character.transform.position.y, tilePosition.z);
+        transform.position = new Vector3(tilePosition.x, transform.position.y, tilePosition.z);
     }
 }
