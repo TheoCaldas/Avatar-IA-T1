@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: URPGrass_Material
+  m_Shader: {fileID: 4800000, guid: 99d3416a0af68a94d8a6c291fefab6b4, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 3e19af442075d0845938165f458fea68, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WindDistortionMap:
+        m_Texture: {fileID: 2800000, guid: 188a0a72cb16bdf4ebb156401ddd9361, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaCutOff: 0.98
+    - _Base: 0.5
+    - _Height: 1.96
+    - _LightPower: 0.15
+    - _MaxHeight: 2.28
+    - _MinHeight: 0.5
+    - _ShadowPower: 0.35
+    - _TPower: 0.15
+    - _WindStrength: 0.4
+    m_Colors:
+    - _Darker: {r: 0.3679245, g: 0.36125213, b: 0.1961107, a: 1}
+    - _Tint: {r: 0.9215687, g: 0.9058824, b: 0.5176471, a: 1}
+    - _WindFrequency: {r: 0.2, g: 0.2, b: 0.2, a: 0}
+  m_BuildTextureStacks: []
