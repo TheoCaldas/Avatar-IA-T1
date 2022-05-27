@@ -17,55 +17,49 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     [HideInInspector] public Tile[,] tileMap;
     //Tiles that are objectives (should be sorted when set)
     [HideInInspector] public List<Tile> eventTiles;
-
-    //List of colors changes in tiles to help visualing the algorithm
-    [HideInInspector] public List<Color> visualizeColors = new List<Color>();
-    [HideInInspector] public List<Tile> visualizeTiles = new List<Tile>();
+    //Visualizes AStar
+    [HideInInspector] public AStarVisualizer visualizer = new AStarVisualizer();
+    //Makes character follow path
+    [HideInInspector] public PathFollower follower = new PathFollower();
 
     //Reference to character in scene
     public GameObject character;
-
     //Reference to objective in scene
     public Transform objective;
-
     //Time factors
     public float followPathTimeFactor = 0.1f;
     public float visualizerTimeFactor = 0.01f;
 
     //Algorithm measures
     private AStar aStar = new AStar();
-    private float pathCost = 0.0f;
+    [HideInInspector] public float pathCost = 0.0f; //can be modified by follower
     private float totalCost = 0.0f; //sum of all path costs
 
     //Update control variables
     private MapState currentState = MapState.None;
     private int currentEventIndex = -1;
-    private List<Tile> currentPath;
-    private int aStarVisualizationIndex;
-    private int followPathIndex;
     private float timeSinceLastUpdate;
+
+    public void StartPathFinding() {
+        follower.changeObjectPosition(eventTiles[0], character.transform);
+        objective.GetComponent<ParticleSystem>().Play();
+        goToNextEvent();
+        // findAllPaths();
+    }
 
     private void goToNextEvent()
     {
         currentState = MapState.Ready;
         currentEventIndex++;
-        currentPath = null;
-        aStarVisualizationIndex = 0;
-        followPathIndex = 0;
+        visualizer.reset();
+        follower.reset();
+        follower.currentPath = null;
         pathCost = 0.0f;
         timeSinceLastUpdate = 0.0f;
-        changeObjectPosition(eventTiles[currentEventIndex + 1], objective);
+        follower.changeObjectPosition(eventTiles[currentEventIndex + 1], objective);
     }
 
-    public void StartPathFinding() {
-        changeObjectPosition(eventTiles[0], character.transform);
-        objective.GetComponent<ParticleSystem>().Play();
-        goToNextEvent();
-
-        // findAllPaths();
-    }
-
-    void findAllPaths()
+    private void findAllPaths()
     {
         for (int i = 0; i < eventTiles.Count - 1; i++)
         {
@@ -82,7 +76,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         Debug.Log("Total Cost: " + totalCost.ToString());
     }
 
-    private List<Tile> FindPath(Tile startTile, Tile endTile)
+    private List<Tile> findPath(Tile startTile, Tile endTile)
     {
         float temp = Time.realtimeSinceStartup;
         List<Tile> shortestPath = aStar.aStar(tileMap, startTile, endTile);
@@ -90,42 +84,6 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             " to event " + endTile.eventID.ToString() + "! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
         return shortestPath;
     }   
-
-    private bool VisualizeAStar() //did update visualization
-    {
-        if (aStarVisualizationIndex < visualizeColors.Count)
-        {
-            Tile tile = visualizeTiles[aStarVisualizationIndex];
-            Color color = visualizeColors[aStarVisualizationIndex];
-            tile.changeColor(color);
-            aStarVisualizationIndex++;
-            return true;
-        }
-        return false;
-    }
-
-    private void ClearAStarVisualization()
-    {
-        foreach (Tile tile in visualizeTiles)
-            tile.revertColor();
-
-        visualizeColors.Clear();
-        visualizeTiles.Clear();
-    }
-
-    private bool FollowPath() //did update following
-    {
-        //TO DO: Make reflect tile cost
-        if (followPathIndex < currentPath.Count)
-        {
-            Tile tile = currentPath[followPathIndex];
-            changeObjectPosition(tile, character.transform);
-            pathCost += tile.timeCost;
-            followPathIndex++;
-            return true;
-        }
-        return false;
-    }
 
     private int calculateUpdateTimes(float factor)
     {
@@ -142,18 +100,12 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         return n;
     }
 
-    void changeObjectPosition(Tile tile, Transform transform)
-    {
-        Vector3 tilePosition = tile.tile3DRef.transform.position;
-        transform.position = new Vector3(tilePosition.x, transform.position.y, tilePosition.z);
-    }
-
     private void Update() 
     {
         if (currentState == MapState.Ready && currentEventIndex < eventTiles.Count - 1)
         {
             currentState = MapState.RunningAStar;
-            currentPath = FindPath(eventTiles[currentEventIndex], eventTiles[currentEventIndex + 1]);
+            follower.currentPath = findPath(eventTiles[currentEventIndex], eventTiles[currentEventIndex + 1]);
             currentState = MapState.VisualizingAStar;
         }
         else if (currentState == MapState.VisualizingAStar)
@@ -161,21 +113,21 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             int updateTimes = calculateUpdateTimes(visualizerTimeFactor);
             bool didChange = true;
             for (int i = 0; i < updateTimes; i++)
-                didChange = didChange && VisualizeAStar();
+                didChange = didChange && visualizer.visualize();
 
             if (!didChange || visualizerTimeFactor <= 0.0f)
             {
-                ClearAStarVisualization();
+                visualizer.clearVisualization();
                 currentState = MapState.FollowingPath;
                 timeSinceLastUpdate = 0.0f;
             }
         }
-        else if (currentState == MapState.FollowingPath && currentPath != null)
+        else if (currentState == MapState.FollowingPath && follower.currentPath != null)
         {
             int updateTimes = calculateUpdateTimes(followPathTimeFactor);
             bool didChange = true;
             for (int i = 0; i < updateTimes; i++)
-                didChange = didChange && FollowPath();
+                didChange = didChange && follower.FollowPath();
 
             if (!didChange || followPathTimeFactor <= 0.0f)
             {

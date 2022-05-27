@@ -168,8 +168,7 @@ public class AStar
 
     void addToVisualizeQueue(Tile tile, Color color)
     {
-        MapManager.Instance.visualizeTiles.Add(tile);
-        MapManager.Instance.visualizeColors.Add(color);
+        MapManager.Instance.visualizer.add(tile, color);
     }
 
     int calculateHCost(Tile a, Tile b) //using manhattan distance
