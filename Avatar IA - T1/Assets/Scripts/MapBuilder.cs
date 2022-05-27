@@ -6,13 +6,9 @@ public class MapBuilder : MonoBehaviour
 {
     private const string fileName = "Assets/Resources/mapa.txt";
     public GameObject baseTile;
-    public List<Material> tileMaterials;
+    public List<GameObject> tilePrefabs;
     public float tilesDistance = 10;
     
-    [SerializeField]
-    private GameObject plainTile;
-    [SerializeField]
-    private GameObject forestTile;
     [SerializeField]
     private GameObject oceanBlock;
 
@@ -45,31 +41,15 @@ public class MapBuilder : MonoBehaviour
             {
                 //copy base tile and reflect it to tileMap[i,j]
                 GameObject newTile;
-                if (tileMap[i, j].type == TileType.Plain)
-                {
-                    newTile = Instantiate(plainTile,transform);
-                    newTile.SetActive(true);
-                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
-                    newTile.name = tileMap[i,j].ToString();
-                }
-                else if (tileMap[i, j].type == TileType.Florest)
-                {
-                    newTile = Instantiate(forestTile,transform);
-                    newTile.SetActive(true);
-                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
-                    newTile.name = tileMap[i,j].ToString();
-                }
-                else
-                {
-                    newTile = Instantiate(baseTile, transform);
-                    newTile.SetActive(true);
-                    newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
-                    newTile.GetComponent<Renderer>().material = tileTypeToMaterial(tileMap[i,j].type);
-                    newTile.name = tileMap[i,j].ToString();
-                }
+
+                newTile = Instantiate(tileTypeToGameObject(tileMap[i,j].type), transform);
+                newTile.SetActive(true);
+                newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                newTile.name = tileMap[i,j].ToString();
                 
                 tileMap[i,j].originalMaterial = Instantiate(newTile.GetComponentInChildren<Renderer>().material);
                 tileMap[i,j].tile3DRef = newTile;
+
             }
         }
         oceanBlock.SetActive(true);
@@ -99,24 +79,24 @@ public class MapBuilder : MonoBehaviour
         return (tileMap, eventTiles);
     }
 
-    private Material tileTypeToMaterial(TileType type)
+    private GameObject tileTypeToGameObject(TileType type)
     {
         switch (type)
         {
             case TileType.Plain:
-                return tileMaterials[0];
+                return tilePrefabs[0];
             case TileType.Rocky:
-                return tileMaterials[1];
-            case TileType.Florest:
-                return tileMaterials[2];
+                return tilePrefabs[1];
+            case TileType.Forest:
+                return tilePrefabs[2];
             case TileType.Water:
-                return tileMaterials[3];
+                return tilePrefabs[3];
             case TileType.Mountain:
-                return tileMaterials[4];
+                return tilePrefabs[4];
             case TileType.Event:
-                return tileMaterials[5];
+                return tilePrefabs[5];
             default:
-                return tileMaterials[0];
+                return tilePrefabs[0];
         }
     }
 }

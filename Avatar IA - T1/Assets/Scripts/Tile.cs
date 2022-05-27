@@ -6,7 +6,7 @@ public enum TileType
 {
     Plain = 1,
     Rocky = 5,
-    Florest = 10,
+    Forest = 10,
     Water = 15,
     Mountain = 200,
     Event = 0
@@ -47,7 +47,7 @@ public class Tile
             case 'R':
                 return TileType.Rocky;
             case 'F':
-                return TileType.Florest;
+                return TileType.Forest;
             case 'A':
                 return TileType.Water;
             case 'M':
