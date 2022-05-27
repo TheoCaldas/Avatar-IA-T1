@@ -5922,7 +5922,7 @@ MonoBehaviour:
   tilePrefabs:
   - {fileID: 3995863653888402821, guid: 02dffacb652a5894db2b7a9390fa2e16, type: 3}
   - {fileID: 7184652271955613711, guid: d3c8130ecb637ec43867468c43b6e1b7, type: 3}
-  - {fileID: 7184652271955613711, guid: d535ecaafe3c76241bec7ff77e0ce6f3, type: 3}
+  - {fileID: 3995863653888402821, guid: eebbaacc1fbd09446aa4899c2cfe41a6, type: 3}
   - {fileID: 7184652271955613711, guid: 7cfc89a34593fd34aadef7da6e885bb3, type: 3}
   - {fileID: 7184652271955613711, guid: fd26fb218c8831245969b8394146142e, type: 3}
   - {fileID: 7184652271955613711, guid: 1fbac36af24c5bc47820165c517d4bbd, type: 3}
