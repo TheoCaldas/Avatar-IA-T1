@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44816184, g: 0.49817878, b: 0.5755565, a: 1}
+  m_IndirectSpecularColor: {r: 0.44816178, g: 0.4981783, b: 0.57555586, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -388,8 +388,8 @@ MonoBehaviour:
   visualizeColors: []
   character: {fileID: 581531933}
   objective: {fileID: 1406145840}
-  followPathTimeFactor: 0.01
-  visualizerTimeFactor: 0
+  followPathTimeFactor: 0.1
+  visualizerTimeFactor: 0.01
 --- !u!4 &657728816
 Transform:
   m_ObjectHideFlags: 0

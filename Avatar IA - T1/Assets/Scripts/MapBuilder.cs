@@ -41,15 +41,18 @@ public class MapBuilder : MonoBehaviour
             {
                 //copy base tile and reflect it to tileMap[i,j]
                 GameObject newTile;
-
                 newTile = Instantiate(tileTypeToGameObject(tileMap[i,j].type), transform);
                 newTile.SetActive(true);
                 newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
                 newTile.name = tileMap[i,j].ToString();
                 
-                tileMap[i,j].originalMaterial = Instantiate(newTile.GetComponentInChildren<Renderer>().material);
-                tileMap[i,j].tile3DRef = newTile;
+                //set orignal materials to revert mess with color
+                MeshRenderer[] renderers = newTile.GetComponentsInChildren<MeshRenderer>();
+                foreach(MeshRenderer r in renderers)
+                    tileMap[i,j].originalMaterials.Add(Instantiate(r.material));
 
+                //set reference to gameobject in tile
+                tileMap[i,j].tile3DRef = newTile;
             }
         }
         oceanBlock.SetActive(true);

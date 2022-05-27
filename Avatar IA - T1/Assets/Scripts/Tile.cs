@@ -21,7 +21,7 @@ public class Tile
 
     //References to tile object in scene
     public GameObject tile3DRef;
-    public Material originalMaterial;
+    public List<Material> originalMaterials = new List<Material>();
 
     public Tile(char caracter, int x, int y)
     {
@@ -84,14 +84,24 @@ public class Tile
 
     public void changeColor(Color color)
     {
-        MeshRenderer r = tile3DRef.GetComponentInChildren<MeshRenderer>();
-        r.material.SetColor("_BaseColor", color);
-        if (type == TileType.Water)
+        MeshRenderer[] renderers = tile3DRef.GetComponentsInChildren<MeshRenderer>();
+        foreach(MeshRenderer r in renderers)
+        {
+            r.material.SetColor("_BaseColor", color);
             r.material.SetColor("_DeepColor", color);
+            r.material.SetColor("_Tint", color);
+            r.material.SetColor("_DarkerTint", color);
+        }
     }
 
     public void revertColor()
     {
-        tile3DRef.GetComponentInChildren<MeshRenderer>().material = originalMaterial;
+        MeshRenderer[] renderers = tile3DRef.GetComponentsInChildren<MeshRenderer>();
+        int index = 0;
+        foreach(MeshRenderer r in renderers)
+        {
+            r.material = originalMaterials[index];
+            index++;
+        }
     }
 }
