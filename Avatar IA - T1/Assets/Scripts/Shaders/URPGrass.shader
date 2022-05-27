@@ -34,7 +34,7 @@ Shader "Unlit/URPGrass"
             
             HLSLPROGRAM
 
-            #pragma prefer_hlslcc gles
+            #pragma prefer_hlslcc glcore
             #pragma exclude_renderers d3d11_9x
             #pragma target 2.0
 
@@ -78,7 +78,7 @@ Shader "Unlit/URPGrass"
             
             HLSLPROGRAM
             
-            #pragma prefer_hlslcc gles
+            #pragma prefer_hlslcc glcore
             #pragma exclude_renderers d3d11_9x
             #pragma target 4.0
 
@@ -110,7 +110,6 @@ Shader "Unlit/URPGrass"
             #include  "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
             #include "Assets/Scripts/Shaders/GrassPass.hlsl"
-
             
             ENDHLSL
         }

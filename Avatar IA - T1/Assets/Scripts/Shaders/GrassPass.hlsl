@@ -72,6 +72,7 @@ Varyings LitPassVertex(Attributes input)
     
     output.normalWS = vertexNormalInput.normalWS;
     output.tangentWS = vertexNormalInput.tangentWS;
+    output.normalOS = input.normalOS;
 
     #ifdef _NORMALMAP
         output.bitangentWS = vertexNormalInput.bitangentWS;
