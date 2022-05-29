@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class PathFollower
 {
-    private int followPathIndex;
+    private int currentIndex;
     public List<Tile> currentPath;
     public bool FollowPath() //did update following
     {
         //TO DO: Make reflect tile cost
-        if (followPathIndex < currentPath.Count)
+        if (currentIndex < currentPath.Count)
         {
-            Tile tile = currentPath[followPathIndex];
+            Tile tile = currentPath[currentIndex];
             changeObjectPosition(tile, MapManager.Instance.character.transform);
             MapManager.Instance.pathCost += tile.timeCost;
-            followPathIndex++;
+            currentIndex++;
             return true;
         }
         return false;
@@ -23,11 +23,12 @@ public class PathFollower
     public void changeObjectPosition(Tile tile, Transform transform)
     {
         Vector3 tilePosition = tile.tile3DRef.transform.position;
-        transform.position = new Vector3(tilePosition.x, transform.position.y, tilePosition.z);
+        Vector3 tileScale = tile.tile3DRef.transform.localScale;
+        transform.position = new Vector3(tilePosition.x, tilePosition.y + tileScale.y + transform.localScale.y, tilePosition.z);
     }
 
     public void reset()
     {
-        followPathIndex = 0;
+        currentIndex = 0;
     }
 }

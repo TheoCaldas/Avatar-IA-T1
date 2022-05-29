@@ -385,11 +385,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51622c3173d7b4949b4cfe263cf15435, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualizeColors: []
   character: {fileID: 581531933}
   objective: {fileID: 1406145840}
   followPathTimeFactor: 0.1
   visualizerTimeFactor: 0.01
+  pathCost: 0
 --- !u!4 &657728816
 Transform:
   m_ObjectHideFlags: 0
@@ -6085,7 +6085,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a49c1a45eea9e431fbbb07f07761bda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseTile: {fileID: 0}
   tilePrefabs:
   - {fileID: 3995863653888402821, guid: 02dffacb652a5894db2b7a9390fa2e16, type: 3}
   - {fileID: 7184652271955613711, guid: d3c8130ecb637ec43867468c43b6e1b7, type: 3}
@@ -6094,6 +6093,7 @@ MonoBehaviour:
   - {fileID: 7184652271955613711, guid: fd26fb218c8831245969b8394146142e, type: 3}
   - {fileID: 7184652271955613711, guid: 1fbac36af24c5bc47820165c517d4bbd, type: 3}
   tilesDistance: 10
+  tilesHeightOffset: 1
   oceanBlock: {fileID: 316147770}
 --- !u!4 &1573833539
 Transform:

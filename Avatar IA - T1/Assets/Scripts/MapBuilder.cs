@@ -5,9 +5,11 @@ using UnityEngine;
 public class MapBuilder : MonoBehaviour
 {
     private const string fileName = "Assets/Resources/mapa.txt";
-    public GameObject baseTile;
     public List<GameObject> tilePrefabs;
     public float tilesDistance = 10;
+    public float tilesHeightOffset = 1;
+
+    private Queue<Tile> heightDefQueue = new Queue<Tile>();
     
     [SerializeField]
     private GameObject oceanBlock;
@@ -19,6 +21,10 @@ public class MapBuilder : MonoBehaviour
         temp = Time.realtimeSinceStartup;
         (MapManager.Instance.tileMap, MapManager.Instance.eventTiles) = textToTileMap(fileName);
         Debug.Log("Did construct map! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+
+        temp = Time.realtimeSinceStartup;
+        calculateHeights(MapManager.Instance.tileMap);
+        Debug.Log("Did calculate heights! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
         temp = Time.realtimeSinceStartup;
         renderTileMap(MapManager.Instance.tileMap);
@@ -43,7 +49,8 @@ public class MapBuilder : MonoBehaviour
                 GameObject newTile;
                 newTile = Instantiate(tileTypeToGameObject(tileMap[i,j].type), transform);
                 newTile.SetActive(true);
-                newTile.transform.position = new Vector3(i * tilesDistance, 0, j * tilesDistance);
+                newTile.transform.position = new Vector3(i * tilesDistance, (tileMap[i,j].heightFactor + 1) * tilesHeightOffset / 2, j * tilesDistance);
+                newTile.transform.localScale = new Vector3(newTile.transform.localScale.x, (tileMap[i,j].heightFactor + 1) * tilesHeightOffset / 2, newTile.transform.localScale.z);
                 newTile.name = tileMap[i,j].ToString();
                 
                 //set orignal materials to revert mess with color
@@ -77,6 +84,8 @@ public class MapBuilder : MonoBehaviour
                 tileMap[i,j] = new Tile(lines[i][j], j, i); //create new tile
                 if (tileMap[i,j].type == TileType.Event)
                     eventTiles.Add(tileMap[i,j]);
+                if (tileMap[i,j].type == TileType.Water)
+                    heightDefQueue.Enqueue(tileMap[i,j]);
             }
         }   
         return (tileMap, eventTiles);
@@ -100,6 +109,69 @@ public class MapBuilder : MonoBehaviour
                 return tilePrefabs[5];
             default:
                 return tilePrefabs[0];
+        }
+    }
+
+    private List<Tile> getNeighbours(Tile tile, int m, int n, Tile[,] tileMap)
+    {
+        List<Tile> neighbours = new List<Tile>();
+        int x = tile.xRef;
+        int y = tile.yRef;
+
+        int leftX = x - 1;
+        int rightX = x + 1;
+        int upY = y - 1;
+        int downY = y + 1;
+
+        if (leftX >= 0)
+            neighbours.Add(tileMap[y, leftX]);
+        if (rightX < n)
+            neighbours.Add(tileMap[y, rightX]);
+        if (upY >= 0)
+            neighbours.Add(tileMap[upY, x]);
+        if (downY < m)
+            neighbours.Add(tileMap[downY, x]);
+
+        if (leftX >= 0 && upY >= 0)
+            neighbours.Add(tileMap[upY, leftX]);
+        if (leftX >= 0 && downY < m)
+            neighbours.Add(tileMap[downY, leftX]);
+        if (rightX < n && upY >= 0)
+            neighbours.Add(tileMap[upY, rightX]);
+        if (rightX < n && downY < m)
+            neighbours.Add(tileMap[downY, rightX]);
+        
+        return neighbours;
+    }
+
+    private void calculateHeights(Tile[,] tileMap)
+    {
+        int m = tileMap.GetLength(0);
+        int n = tileMap.GetLength(1);
+
+        while (heightDefQueue.Count > 0)
+        {
+            Tile tile = heightDefQueue.Dequeue();
+
+            if (tile.heightFactor != -1)
+                continue;
+
+            int highestFactor = -1;
+            List<Tile> neighbours = getNeighbours(tile, m, m, tileMap);
+            foreach (Tile neighbour in neighbours)
+            {
+                heightDefQueue.Enqueue(neighbour);
+
+                if (neighbour.heightFactor > highestFactor)
+                    highestFactor = neighbour.heightFactor;
+            }
+
+            tile.heightFactor = highestFactor + 1;
+            tile.heightFactor = Mathf.Max(1, tile.heightFactor);
+
+            if (tile.type == TileType.Water)
+                tile.heightFactor = 0;
+
         }
     }
 }

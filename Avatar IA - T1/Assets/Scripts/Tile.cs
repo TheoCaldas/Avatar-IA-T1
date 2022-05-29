@@ -18,10 +18,11 @@ public class Tile
     public int xRef, yRef;
     public int timeCost;
     public int eventID;
-
+    
     //References to tile object in scene
     public GameObject tile3DRef;
     public List<Material> originalMaterials = new List<Material>();
+    public int heightFactor;
 
     public Tile(char caracter, int x, int y)
     {
@@ -30,6 +31,7 @@ public class Tile
         type = charToTileType(caracter);
         timeCost = (int) type;
         eventID = -1;
+        heightFactor = -1;
 
         if (type == TileType.Event)
         {
