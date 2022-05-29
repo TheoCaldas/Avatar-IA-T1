@@ -106,4 +106,59 @@ public class Tile
             index++;
         }
     }
+
+    public List<Tile> get4Neighbours(Tile[,] tileMap, int m, int n)
+    {
+        List<Tile> neighbours = new List<Tile>();
+        int x = xRef;
+        int y = yRef;
+
+        int leftX = x - 1;
+        int rightX = x + 1;
+        int upY = y - 1;
+        int downY = y + 1;
+
+        if (leftX >= 0)
+            neighbours.Add(tileMap[y, leftX]);
+        if (rightX < n)
+            neighbours.Add(tileMap[y, rightX]);
+        if (upY >= 0)
+            neighbours.Add(tileMap[upY, x]);
+        if (downY < m)
+            neighbours.Add(tileMap[downY, x]);
+        
+        return neighbours;
+    }
+
+    public List<Tile> get8Neighbours(Tile[,] tileMap, int m, int n)
+    {
+        List<Tile> neighbours = new List<Tile>();
+        int x = xRef;
+        int y = yRef;
+
+        int leftX = x - 1;
+        int rightX = x + 1;
+        int upY = y - 1;
+        int downY = y + 1;
+
+        if (leftX >= 0)
+            neighbours.Add(tileMap[y, leftX]);
+        if (rightX < n)
+            neighbours.Add(tileMap[y, rightX]);
+        if (upY >= 0)
+            neighbours.Add(tileMap[upY, x]);
+        if (downY < m)
+            neighbours.Add(tileMap[downY, x]);
+
+        if (leftX >= 0 && upY >= 0)
+            neighbours.Add(tileMap[upY, leftX]);
+        if (leftX >= 0 && downY < m)
+            neighbours.Add(tileMap[downY, leftX]);
+        if (rightX < n && upY >= 0)
+            neighbours.Add(tileMap[upY, rightX]);
+        if (rightX < n && downY < m)
+            neighbours.Add(tileMap[downY, rightX]);
+        
+        return neighbours;
+    }
 }

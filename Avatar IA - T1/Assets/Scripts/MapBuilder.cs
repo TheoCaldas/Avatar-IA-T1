@@ -112,38 +112,6 @@ public class MapBuilder : MonoBehaviour
         }
     }
 
-    private List<Tile> getNeighbours(Tile tile, int m, int n, Tile[,] tileMap)
-    {
-        List<Tile> neighbours = new List<Tile>();
-        int x = tile.xRef;
-        int y = tile.yRef;
-
-        int leftX = x - 1;
-        int rightX = x + 1;
-        int upY = y - 1;
-        int downY = y + 1;
-
-        if (leftX >= 0)
-            neighbours.Add(tileMap[y, leftX]);
-        if (rightX < n)
-            neighbours.Add(tileMap[y, rightX]);
-        if (upY >= 0)
-            neighbours.Add(tileMap[upY, x]);
-        if (downY < m)
-            neighbours.Add(tileMap[downY, x]);
-
-        if (leftX >= 0 && upY >= 0)
-            neighbours.Add(tileMap[upY, leftX]);
-        if (leftX >= 0 && downY < m)
-            neighbours.Add(tileMap[downY, leftX]);
-        if (rightX < n && upY >= 0)
-            neighbours.Add(tileMap[upY, rightX]);
-        if (rightX < n && downY < m)
-            neighbours.Add(tileMap[downY, rightX]);
-        
-        return neighbours;
-    }
-
     private void calculateHeights(Tile[,] tileMap)
     {
         int m = tileMap.GetLength(0);
@@ -157,7 +125,7 @@ public class MapBuilder : MonoBehaviour
                 continue;
 
             int highestFactor = -1;
-            List<Tile> neighbours = getNeighbours(tile, m, m, tileMap);
+            List<Tile> neighbours = tile.get8Neighbours(tileMap, m, n);
             foreach (Tile neighbour in neighbours)
             {
                 heightDefQueue.Enqueue(neighbour);

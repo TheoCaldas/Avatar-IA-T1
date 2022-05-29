@@ -5,29 +5,6 @@ using BinaryHeap;
 
 public class AStar
 {
-    private List<Tile> getNeighbours(Tile tile, int m, int n, Tile[,] tileMap)
-    {
-        List<Tile> neighbours = new List<Tile>();
-        int x = tile.xRef;
-        int y = tile.yRef;
-
-        int leftX = x - 1;
-        int rightX = x + 1;
-        int upY = y - 1;
-        int downY = y + 1;
-
-        if (leftX >= 0)
-            neighbours.Add(tileMap[y, leftX]);
-        if (rightX < n)
-            neighbours.Add(tileMap[y, rightX]);
-        if (upY >= 0)
-            neighbours.Add(tileMap[upY, x]);
-        if (downY < m)
-            neighbours.Add(tileMap[downY, x]);
-        
-        return neighbours;
-    }
-
     private List<Tile> convertToList(Dictionary<Tile, Tile> predecessor, Tile startTile, Tile endTile)
     {
         List<Tile> path = new List<Tile>();
@@ -75,7 +52,7 @@ public class AStar
             if (!hasBeenVisited[tile])
             {
                 hasBeenVisited[tile] = true;
-                List<Tile> neighbours = getNeighbours(tile, m, n, tileMap);
+                List<Tile> neighbours = tile.get4Neighbours(tileMap, m, n);
 
                 foreach(Tile neighbour in neighbours)
                 {
@@ -137,7 +114,7 @@ public class AStar
                 addToVisualizeQueue(tile, Color.red);
 
                 hasBeenVisited[tile] = true;
-                List<Tile> neighbours = getNeighbours(tile, m, n, tileMap);
+                List<Tile> neighbours = tile.get4Neighbours(tileMap, m, n);
 
                 foreach(Tile neighbour in neighbours)
                 {
