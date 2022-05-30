@@ -62,7 +62,8 @@ public class MapBuilder : MonoBehaviour
                 tileMap[i,j].tile3DRef = newTile;
             }
         }
-        oceanBlock.SetActive(true);
+        if (fileName == "Assets/Resources/mapa.txt")
+            oceanBlock.SetActive(true);
     }
 
     //returns both tileMap and a list of its events
