@@ -16,7 +16,8 @@ public class PathFollower
         if (currentIndex < currentPath.Count)
         {
             Tile tile = currentPath[currentIndex];
-            MapManager.Instance.pathCost += tile.timeCost;
+            if (tile.type != TileType.Event)
+                MapManager.Instance.pathCost += tile.timeCost;
             currentIndex++;
             return true;
         }

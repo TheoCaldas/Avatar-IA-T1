@@ -79,7 +79,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             " to event " + eventTiles[i + 1].eventID.ToString() + "! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
             pathCost = 0.0f;
             foreach (Tile tile in shortestPath)
-                pathCost += tile.timeCost;
+                pathCost += (tile.type != TileType.Event) ? tile.timeCost : 0;
             Debug.Log("Path Cost: " + pathCost.ToString());
             totalCost += pathCost;
         }
