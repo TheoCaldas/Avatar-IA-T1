@@ -53,10 +53,20 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         currentEventIndex++;
         visualizer.reset();
         follower.reset();
-        follower.currentPath = null;
         pathCost = 0.0f;
         timeSinceLastUpdate = 0.0f;
-        follower.changeObjectPosition(eventTiles[currentEventIndex + 1], objective);
+
+        if (currentEventIndex + 1 >= eventTiles.Count)
+            finish();
+        else
+            follower.changeObjectPosition(eventTiles[currentEventIndex + 1], objective);
+    }
+
+    private void finish()
+    {
+        currentState = MapState.None;
+        Debug.Log("Total Cost: " + totalCost.ToString());
+        objective.GetComponent<ParticleSystem>().Stop();
     }
 
     private void findAllPaths()
@@ -105,7 +115,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         if (currentState == MapState.Ready && currentEventIndex < eventTiles.Count - 1)
         {
             currentState = MapState.RunningAStar;
-            follower.currentPath = findPath(eventTiles[currentEventIndex], eventTiles[currentEventIndex + 1]);
+            follower.setCurrentPath(findPath(eventTiles[currentEventIndex], eventTiles[currentEventIndex + 1]));
             currentState = MapState.VisualizingAStar;
         }
         else if (currentState == MapState.VisualizingAStar)
@@ -122,14 +132,23 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
                 timeSinceLastUpdate = 0.0f;
             }
         }
-        else if (currentState == MapState.FollowingPath && follower.currentPath != null)
+        else if (currentState == MapState.FollowingPath && follower.hasPath())
         {
-            int updateTimes = calculateUpdateTimes(followPathTimeFactor);
+            //TO DO: Make change cost in the middle of the tile
+            float factor = followPathTimeFactor * follower.getCurrentTimeCost();
+            int updateTimes = 0;
+
+            if (factor > 0.0f)
+            {
+                updateTimes = calculateUpdateTimes(factor);
+                follower.lerpToNext(character.transform, timeSinceLastUpdate / factor);
+            }
+
             bool didChange = true;
             for (int i = 0; i < updateTimes; i++)
-                didChange = didChange && follower.FollowPath();
+                didChange = didChange && follower.followOneStep();
 
-            if (!didChange || followPathTimeFactor <= 0.0f)
+            if (!didChange || factor <= 0.0f)
             {
                 Debug.Log("Path Cost: " + pathCost.ToString());
                 totalCost += pathCost;
