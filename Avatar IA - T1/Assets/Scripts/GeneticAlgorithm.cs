@@ -131,11 +131,12 @@ public class GeneticAlgorithm
     private int populationSize;
     private float mutationRate;
     private int maxGenerations;
+    private int numberOfSelectedParents;
 
     //Other
     private int genotypeSize;
     private int generationIndex;
-    private List<Solution> currentGeneration;
+    private Solution[] currentGeneration;
     
     public void startGenetic()
     {
@@ -143,21 +144,63 @@ public class GeneticAlgorithm
         //TO DO: Mutation
         //TO DO: Solutions Selection
         //TO DO: Save best solution
-        populationSize = 10;
+        populationSize = 100;
         mutationRate = 0.1f;
         maxGenerations = 100;
+        numberOfSelectedParents = 30;
 
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
-        currentGeneration = new List<Solution>();
+        currentGeneration = new Solution[populationSize];
 
         for (int i = 0; i < populationSize; i++)
         {
-            currentGeneration.Add(Solution.buildPossibleRandomSolution(genotypeSize));
-            currentGeneration[i].print();
+            currentGeneration[i] = Solution.buildPossibleRandomSolution(genotypeSize);
+            // currentGeneration[i].print();
             currentGeneration[i].score = fitness(currentGeneration[i]);
-            Debug.Log(currentGeneration[i].score);
+            // Debug.Log(currentGeneration[i].score);
         }
+        Debug.Log("MELHORES:");
+        Solution[] selectedParents = solutionSelection(numberOfSelectedParents);
+        for (int i = 0; i < numberOfSelectedParents; i++)
+           Debug.Log(selectedParents[i].score);
+    }
+
+    private Solution[] solutionSelection(int numberOfParents) //using rollette method
+    {
+        Array.Sort(currentGeneration, (a, b) => a.score.CompareTo(b.score));
+
+        float[] probabilities = new float[populationSize];
+        bool[] isSelected = new bool[populationSize];
+
+        float scoreSum = 0.0f;
+        for (int i = 0; i < populationSize; i++)
+            scoreSum += currentGeneration[i].score;
+        for (int i = 0; i < populationSize; i++)
+        {
+            isSelected[i] = false;
+            probabilities[i] = 1.0f - (currentGeneration[i].score / scoreSum);
+            if (i > 0)
+                probabilities[i] += probabilities[i - 1];
+        }
+        
+        Solution[] selectedParents = new Solution[numberOfParents];
+        int j = 0;
+        while (j < numberOfParents)
+        {
+            float r = UnityEngine.Random.Range(0.0f, 1.0f);
+            for (int i = 0; i < populationSize; i++)
+            {
+                if (probabilities[i] >= r && !isSelected[i])
+                {
+                    selectedParents[j] = currentGeneration[i];
+                    isSelected[i] = true;
+                    j++;
+                    break;
+                }
+            }
+        }
+        return selectedParents;
     }
 
     public float fitness(Solution solution)
