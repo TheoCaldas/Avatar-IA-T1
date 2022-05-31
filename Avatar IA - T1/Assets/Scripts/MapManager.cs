@@ -30,10 +30,13 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     public float followPathTimeFactor = 0.1f;
     public float visualizerTimeFactor = 0.01f;
 
-    //Algorithm measures
+    //AStar measures
     private AStar aStar = new AStar();
     [HideInInspector] public float pathCost = 0.0f; //can be modified by follower
     private float totalCost = 0.0f; //sum of all path costs
+
+    //Genetic measuares
+    private GeneticAlgorithm genetic = new GeneticAlgorithm();
 
     //Update control variables
     private MapState currentState = MapState.None;
@@ -41,10 +44,11 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     private float timeSinceLastUpdate;
 
     public void StartPathFinding() {
-        follower.changeObjectPosition(eventTiles[0], character.transform);
-        objective.GetComponent<ParticleSystem>().Play();
-        goToNextEvent();
+        // follower.changeObjectPosition(eventTiles[0], character.transform);
+        // objective.GetComponent<ParticleSystem>().Play();
+        // goToNextEvent();
         // findAllPaths();
+        genetic.startGenetic();
     }
 
     private void goToNextEvent()

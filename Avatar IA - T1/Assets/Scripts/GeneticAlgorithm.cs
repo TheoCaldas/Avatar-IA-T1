@@ -18,9 +18,8 @@ public class Solution
 {
     public byte[] genotype;
     private int genSize;
-    private float score;
+    public float score;
     
-
     private Solution(byte[] gen, int size)
     {
         genotype = gen;
@@ -128,15 +127,16 @@ public class GeneticAlgorithm
         {Character.Momo, 0x1 << 6},
     };
 
+    //Changeable parameters
     private int populationSize;
     private float mutationRate;
-    
     private int maxGenerations;
 
-    private Solution[] currentGeneration;
-    private int generationIndex;
-
+    //Other
     private int genotypeSize;
+    private int generationIndex;
+    private List<Solution> currentGeneration;
+    
     public void startGenetic()
     {
         //TO DO: Crossover
@@ -145,16 +145,18 @@ public class GeneticAlgorithm
         //TO DO: Save best solution
         populationSize = 10;
         mutationRate = 0.1f;
+        maxGenerations = 100;
+
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
-        maxGenerations = 100;
-        currentGeneration = new Solution[populationSize];
+        currentGeneration = new List<Solution>();
 
         for (int i = 0; i < populationSize; i++)
         {
-            currentGeneration[i] = Solution.buildPossibleRandomSolution(genotypeSize);
+            currentGeneration.Add(Solution.buildPossibleRandomSolution(genotypeSize));
             currentGeneration[i].print();
-            Debug.Log(fitness(currentGeneration[i]));
+            currentGeneration[i].score = fitness(currentGeneration[i]);
+            Debug.Log(currentGeneration[i].score);
         }
     }
 

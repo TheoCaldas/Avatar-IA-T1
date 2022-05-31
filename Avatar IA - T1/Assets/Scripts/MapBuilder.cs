@@ -22,13 +22,13 @@ public class MapBuilder : MonoBehaviour
         (MapManager.Instance.tileMap, MapManager.Instance.eventTiles) = textToTileMap(fileName);
         Debug.Log("Did construct map! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
-        temp = Time.realtimeSinceStartup;
-        calculateHeights(MapManager.Instance.tileMap);
-        Debug.Log("Did calculate heights! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+        // temp = Time.realtimeSinceStartup;
+        // calculateHeights(MapManager.Instance.tileMap);
+        // Debug.Log("Did calculate heights! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
-        temp = Time.realtimeSinceStartup;
-        renderTileMap(MapManager.Instance.tileMap);
-        Debug.Log("Did render map! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
+        // temp = Time.realtimeSinceStartup;
+        // renderTileMap(MapManager.Instance.tileMap);
+        // Debug.Log("Did render map! Took: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " seconds");
 
         MapManager.Instance.eventTiles.Sort(Tile.compareByEventID);
         MapManager.Instance.StartPathFinding();
