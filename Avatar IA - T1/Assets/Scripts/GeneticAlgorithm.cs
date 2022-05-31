@@ -28,6 +28,25 @@ public class Solution
         genSize = size;
     }
 
+    public bool isValid()
+    {
+        byte a = 0x1;
+        for (int d = 0; d < 7; d++)
+        {
+            int energyPoints = 8;
+            for (int i = 0; i < genSize; i++)
+            {
+                if ((a & genotype[i]) != 0x0)
+                    energyPoints--;
+                
+                if (energyPoints < 0)
+                    return false;
+            }
+            a = unchecked((byte)(a << 1));
+        }
+        return true;
+    }
+
     static public Solution buildPossibleRandomSolution(int size) //each character can be chosen 8 times max
     {
         int[] energyPoints = new int[8];
@@ -120,6 +139,10 @@ public class GeneticAlgorithm
     private int genotypeSize;
     public void startGenetic()
     {
+        //TO DO: Crossover
+        //TO DO: Mutation
+        //TO DO: Solutions Selection
+        //TO DO: Save best solution
         populationSize = 10;
         mutationRate = 0.1f;
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
