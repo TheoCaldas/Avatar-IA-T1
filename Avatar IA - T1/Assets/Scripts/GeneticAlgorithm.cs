@@ -28,6 +28,35 @@ public class Solution
         genSize = size;
     }
 
+    static public Solution buildPossibleRandomSolution(int size) //each character can be chosen 8 times max
+    {
+        int[] energyPoints = new int[8];
+
+        for (int i = 0; i < 8; i++)
+            energyPoints[i] = 8;
+
+        byte[] solution = new byte[size];
+        for (int i = 0; i < size; i++)
+            solution[i] = buildPossibleRandomByte(energyPoints);
+        return new Solution(solution, size);
+    }
+
+    static private byte buildPossibleRandomByte(int[] energyPoints)
+    {
+        byte a = 0x0;
+        byte one = 0x1;
+        for (int d = 0; d < 8; d++)
+        {
+            a = unchecked((byte)(a << 1));
+            if (UnityEngine.Random.Range(0, 3) == 0 && energyPoints[d] > 0)
+            {
+                a += one;
+                energyPoints[d]--;
+            }
+        }
+        return a;
+    }
+
     static public Solution buildRandomSolution(int size)
     {
         byte[] solution = new byte[size];
@@ -60,7 +89,6 @@ public class Solution
 
 public class GeneticAlgorithm
 {
-    // private byte[] genotype;
     Dictionary<Character, float> agility = new Dictionary<Character, float>{
         {Character.Aang, 1.8f},
         {Character.Zukko, 1.6f},
@@ -101,7 +129,7 @@ public class GeneticAlgorithm
 
         for (int i = 0; i < populationSize; i++)
         {
-            currentGeneration[i] = Solution.buildRandomSolution(genotypeSize);
+            currentGeneration[i] = Solution.buildPossibleRandomSolution(genotypeSize);
             currentGeneration[i].print();
             Debug.Log(fitness(currentGeneration[i]));
         }
@@ -117,10 +145,12 @@ public class GeneticAlgorithm
             float sum = 0.0f;
             foreach (Character character in Enum.GetValues(typeof(Character)))  
             {  
-                if ((genotype[i] & digit[character]) == 0x0)
+                if ((genotype[i] & digit[character]) != 0x0)
                     sum += agility[character]; 
             }  
-            score += (float) cost / ((sum > 0.0f) ? sum : 1.0f);
+            float geneScore = (float) cost / ((sum > 0.0f) ? sum : 1.0f);
+            // Debug.Log("timecost = " + cost + " sum = " + sum + " gene score = " + geneScore);
+            score += geneScore;
         }
         return score;
     }
