@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 enum Character
 {
@@ -15,7 +16,7 @@ enum Character
 
 public class Solution
 {
-    private byte[] genotype;
+    public byte[] genotype;
     private int genSize;
     private float score;
     
@@ -43,7 +44,7 @@ public class Solution
         for (int d = 0; d < 8; d++)
         {
             a = unchecked((byte)(a << 1));
-            a += (Random.Range(0, 2) == 0) ? zero : one;
+            a += (UnityEngine.Random.Range(0, 2) == 0) ? zero : one;
         }
         return a;
     }
@@ -69,6 +70,17 @@ public class GeneticAlgorithm
         {Character.Appa, 0.9f},
         {Character.Momo, 0.7f},
     };
+
+    Dictionary<Character, byte> digit = new Dictionary<Character, byte>{
+        {Character.Aang, 0x1},
+        {Character.Zukko, 0x1 << 1},
+        {Character.Toph, 0x1 << 2},
+        {Character.Katara, 0x1 << 3},
+        {Character.Sokka, 0x1 << 4},
+        {Character.Appa, 0x1 << 5},
+        {Character.Momo, 0x1 << 6},
+    };
+
     private int populationSize;
     private float mutationRate;
     
@@ -91,6 +103,25 @@ public class GeneticAlgorithm
         {
             currentGeneration[i] = Solution.buildRandomSolution(genotypeSize);
             currentGeneration[i].print();
+            Debug.Log(fitness(currentGeneration[i]));
         }
+    }
+
+    public float fitness(Solution solution)
+    {
+        byte[] genotype = solution.genotype;
+        float score = 0.0f;
+        for (int i = 0; i < genotypeSize; i++)
+        {
+            int cost = MapManager.Instance.eventTiles[i + 1].timeCost;
+            float sum = 0.0f;
+            foreach (Character character in Enum.GetValues(typeof(Character)))  
+            {  
+                if ((genotype[i] & digit[character]) == 0x0)
+                    sum += agility[character]; 
+            }  
+            score += (float) cost / ((sum > 0.0f) ? sum : 1.0f);
+        }
+        return score;
     }
 }
