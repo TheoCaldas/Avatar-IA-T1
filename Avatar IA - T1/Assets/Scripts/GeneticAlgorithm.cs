@@ -20,7 +20,7 @@ public class Solution
     private int genSize;
     public float score;
     
-    private Solution(byte[] gen, int size)
+    public Solution(byte[] gen, int size)
     {
         genotype = gen;
         score = 0.0f;
@@ -152,18 +152,73 @@ public class GeneticAlgorithm
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
         currentGeneration = new Solution[populationSize];
-
+        
+        //first gen inicialization
         for (int i = 0; i < populationSize; i++)
         {
             currentGeneration[i] = Solution.buildPossibleRandomSolution(genotypeSize);
-            // currentGeneration[i].print();
             currentGeneration[i].score = fitness(currentGeneration[i]);
-            // Debug.Log(currentGeneration[i].score);
         }
-        Debug.Log("MELHORES:");
-        Solution[] selectedParents = solutionSelection(numberOfSelectedParents);
-        for (int i = 0; i < numberOfSelectedParents; i++)
-           Debug.Log(selectedParents[i].score);
+
+
+        for(int n = 0; n < maxGenerations; n++)
+        {
+            Solution[] selectedParents = solutionSelection(numberOfSelectedParents);
+            Solution[] newGen = crossOver(selectedParents);
+            for(int i = 0; i < newGen.Length; i++)
+            {
+                newGen[i].score = fitness(newGen[i]);
+            }
+            currentGeneration = newGen;
+            populationSize = numberOfSelectedParents;
+        }
+
+        for(int i = 0; i < numberOfSelectedParents; i++) {
+            currentGeneration[i].print();
+            Debug.Log(currentGeneration[i].score);
+        }
+
+    }
+
+    private Solution[] crossOver(Solution[] parents) 
+    {
+        int size = parents.Length;
+        Solution[] children = new Solution[2*size];
+        for(int i = 0; i < size/2; i++)
+        {
+            Solution parent1 = parents[i];
+            Solution parent2 = parents[size - i - 1];
+            int nBytes = parent1.genotype.Length;
+            byte[] childrenBytes1 = new byte[nBytes];
+            byte[] childrenBytes2 = new byte[nBytes];
+
+            Solution children1 = new Solution(new byte[0], 0);
+            Solution children2 = new Solution(new byte[0], 0);
+
+            for(int j = 0; j < nBytes; j++)
+            {
+                if(j % 2 == 0)
+                {
+                    childrenBytes1[j] = parent1.genotype[j];
+                    childrenBytes2[j] = parent2.genotype[j];
+                }
+                else
+                {
+                    childrenBytes1[j] = parent2.genotype[j];
+                    childrenBytes2[j] = parent1.genotype[j];
+                }
+                
+                children1 = new Solution(childrenBytes1, nBytes);
+                children2 = new Solution(childrenBytes2, nBytes);
+            }
+
+            children[i*4] = children1;
+            children[i*4 + 1] = children2;
+            children[i*4 + 2] = parent1;
+            children[i*4 + 3] = parent2;
+        }
+
+        return children;
     }
 
     private Solution[] solutionSelection(int numberOfParents) //using rollette method
