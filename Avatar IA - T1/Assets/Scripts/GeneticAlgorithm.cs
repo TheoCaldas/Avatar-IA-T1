@@ -46,6 +46,28 @@ public class Solution
         return true;
     }
 
+    public float validationError()
+    {
+        byte a = 0x1;
+        float[] residual = new float[7];
+
+        for (int d = 0; d < 7; d++)
+        {
+            int energyPoints = 8;
+            for (int i = 0; i < genSize; i++)
+            {
+                if ((a & genotype[i]) != 0x0)
+                    energyPoints--;
+            }
+            a = unchecked((byte)(a << 1));
+            residual[d] = energyPoints;
+        }
+        float error = 0.0f;
+        for (int d = 0; d < 7; d++)
+            error += residual[d] * residual[d];
+        return Mathf.Sqrt(error);
+    }
+
     static public Solution buildPossibleRandomSolution(int size) //each character can be chosen 8 times max
     {
         int[] energyPoints = new int[8];
@@ -132,6 +154,7 @@ public class GeneticAlgorithm
     private float mutationRate;
     private int maxGenerations;
     private int nParents;
+    private float validationFactor;
 
     //Other
     private int genotypeSize;
@@ -146,15 +169,24 @@ public class GeneticAlgorithm
         mutationRate = 0.1f;
         maxGenerations = 100;
         nParents = 30;
+        validationFactor = 50.0f;
 
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
         currentGeneration = new Solution[populationSize];
         
         fistGeneration();
+        bestSolution.print();
+        Debug.Log("Error: " + bestSolution.validationError());
+        Debug.Log("Is Valid: " + bestSolution.isValid());
+
         generationsLoop();
+        bestSolution.print();
+        Debug.Log("Error: " + bestSolution.validationError());
+        Debug.Log("Is Valid: " + bestSolution.isValid());
     }
 
+    //GENERATIONS
     private void fistGeneration()
     {
         generationIndex++;
@@ -192,63 +224,29 @@ public class GeneticAlgorithm
         }
     }
 
-    private (Solution, Solution) createChildren (Solution parent1, Solution parent2)
+    //FITNESS
+    private float fitness(Solution solution)
     {
-        byte[] genotypeChild1 = new byte[genotypeSize];
-        byte[] genotypeChild2 = new byte[genotypeSize];
-
-        for(int i = 0; i < genotypeSize; i++)
+        byte[] genotype = solution.genotype;
+        float score = 0.0f;
+        for (int i = 0; i < genotypeSize; i++)
         {
-            genotypeChild1[i] = (i % 2 == 0) ? parent1.genotype[i]: parent2.genotype[i];
-            genotypeChild2[i] = (i % 2 == 0) ? parent2.genotype[i]: parent1.genotype[i];
+            int cost = MapManager.Instance.eventTiles[i + 1].timeCost;
+            float sum = 0.0f;
+            foreach (Character character in Enum.GetValues(typeof(Character)))  
+            {  
+                if ((genotype[i] & digit[character]) != 0x0)
+                    sum += agility[character]; 
+            }  
+            float geneScore = (float) cost / ((sum > 0.0f) ? sum : 1.0f);
+            // Debug.Log("timecost = " + cost + " sum = " + sum + " gene score = " + geneScore);
+            score += geneScore;
         }
 
-        Solution child1 = new Solution(genotypeChild1, genotypeSize);
-        Solution child2 = new Solution(genotypeChild2, genotypeSize);
-        return (child1, child2);
+        return score + solution.validationError() * validationFactor;
     }
 
-    private bool isPairChosen(Dictionary<int, List<int>> chosenPairs, int index1, int index2)
-    {
-        foreach(int index in chosenPairs[index1])
-            if (index == index2) return true;
-        foreach(int index in chosenPairs[index2])
-            if (index == index1) return true;
-        return false;
-    }
-
-    private Solution[] crossOver(Solution[] parents, int nParents, int nChildren) 
-    {
-        Solution[] children = new Solution[nChildren];
-        for (int i = 0; i < nParents; i++)
-            children[i] = parents[i];
-        
-        int childrenCount = nParents;
-        Dictionary<int, List<int>> chosenPairs = new Dictionary<int, List<int>>();
-        for (int i = 0; i < nParents; i++)
-            chosenPairs[i] = new List<int>();
-
-        while(childrenCount < nChildren)
-        {
-            int randomIndex1 = UnityEngine.Random.Range(0, nParents);
-            int randomIndex2 = UnityEngine.Random.Range(0, nParents);
-            if (randomIndex1 == randomIndex2) continue;
-            if (isPairChosen(chosenPairs, randomIndex1, randomIndex2)) continue;
-            chosenPairs[randomIndex1].Add(randomIndex2);
-            (Solution child1, Solution child2) = createChildren(parents[randomIndex1], parents[randomIndex2]);
-            children[childrenCount] = child1;
-            if (childrenCount + 1 < nChildren)
-                children[childrenCount + 1] = child2;
-            childrenCount += 2;
-        }
-        return children;
-    }
-
-    private void sortCurrentGenerationByScore()
-    {
-        Array.Sort(currentGeneration, (a, b) => a.score.CompareTo(b.score));
-    }
-
+    //PARENTS SELECTION
     private Solution[] solutionSelection(Solution[] currentGen, int nParents) //using rollette method
     {
         float[] probabilities = new float[populationSize];
@@ -284,26 +282,96 @@ public class GeneticAlgorithm
         return selectedParents;
     }
 
-    public float fitness(Solution solution)
+    private void sortCurrentGenerationByScore()
     {
-        byte[] genotype = solution.genotype;
-        float score = 0.0f;
+        Array.Sort(currentGeneration, (a, b) => a.score.CompareTo(b.score));
+    }
+    
+    //CREATE CHILDREN
+    private (Solution, Solution) createChildrenRandomGenes (Solution parent1, Solution parent2) //genes are swapped randomly
+    {
+        byte[] genotypeChild1 = new byte[genotypeSize];
+        byte[] genotypeChild2 = new byte[genotypeSize];
+
         for (int i = 0; i < genotypeSize; i++)
         {
-            int cost = MapManager.Instance.eventTiles[i + 1].timeCost;
-            float sum = 0.0f;
-            foreach (Character character in Enum.GetValues(typeof(Character)))  
-            {  
-                if ((genotype[i] & digit[character]) != 0x0)
-                    sum += agility[character]; 
-            }  
-            float geneScore = (float) cost / ((sum > 0.0f) ? sum : 1.0f);
-            // Debug.Log("timecost = " + cost + " sum = " + sum + " gene score = " + geneScore);
-            score += geneScore;
+            genotypeChild1[i] = parent1.genotype[i];
+            genotypeChild2[i] = parent2.genotype[i];
         }
-        return score;
+
+        int nChanges = UnityEngine.Random.Range(0, genotypeSize);
+        int[] indexes = new int[nChanges];
+        for (int i = 0; i < nChanges; i++)
+            indexes[i] = UnityEngine.Random.Range(0, genotypeSize);
+
+        foreach(int i in indexes)
+        {
+            genotypeChild1[i] = parent2.genotype[i];
+            genotypeChild2[i] = parent1.genotype[i];
+        }
+
+        Solution child1 = new Solution(genotypeChild1, genotypeSize);
+        Solution child2 = new Solution(genotypeChild2, genotypeSize);
+        return (child1, child2);
     }
 
+    private (Solution, Solution) createChildrenAllGenes (Solution parent1, Solution parent2) //genes are swapped consecutively
+    {
+        byte[] genotypeChild1 = new byte[genotypeSize];
+        byte[] genotypeChild2 = new byte[genotypeSize];
+
+        for(int i = 0; i < genotypeSize; i++)
+        {
+            genotypeChild1[i] = (i % 2 == 0) ? parent1.genotype[i]: parent2.genotype[i];
+            genotypeChild2[i] = (i % 2 == 0) ? parent2.genotype[i]: parent1.genotype[i];
+        }
+
+        Solution child1 = new Solution(genotypeChild1, genotypeSize);
+        Solution child2 = new Solution(genotypeChild2, genotypeSize);
+        return (child1, child2);
+    }
+
+    //CROSSOVER
+    private bool isPairChosen(Dictionary<int, List<int>> chosenPairs, int index1, int index2)
+    {
+        foreach(int index in chosenPairs[index1])
+            if (index == index2) return true;
+        foreach(int index in chosenPairs[index2])
+            if (index == index1) return true;
+        return false;
+    }
+
+    private Solution[] crossOver(Solution[] parents, int nParents, int nChildren) 
+    {
+        Solution[] children = new Solution[nChildren];
+        for (int i = 0; i < nParents; i++)
+            children[i] = parents[i];
+        
+        int childrenCount = nParents;
+        Dictionary<int, List<int>> chosenPairs = new Dictionary<int, List<int>>();
+        for (int i = 0; i < nParents; i++)
+            chosenPairs[i] = new List<int>();
+
+        while(childrenCount < nChildren)
+        {
+            int randomIndex1 = UnityEngine.Random.Range(0, nParents);
+            int randomIndex2 = UnityEngine.Random.Range(0, nParents);
+            if (randomIndex1 == randomIndex2) continue;
+            if (isPairChosen(chosenPairs, randomIndex1, randomIndex2)) continue;
+            chosenPairs[randomIndex1].Add(randomIndex2);
+            (Solution child1, Solution child2) = createChildrenRandomGenes(parents[randomIndex1], parents[randomIndex2]);
+            children[childrenCount] = child1;
+            childrenCount++;
+            if (childrenCount < nChildren)
+            {
+                children[childrenCount] = child2;
+                childrenCount++;
+            }
+        }
+        return children;
+    }
+
+    //MUTATION
     private (bool, byte) invertSignal(byte gen, byte mask)
     {
         if((mask & gen) != 0x0) //if is on
