@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.IO;
 
-enum Character
+public enum Character
 {
     Aang,
     Zukko,
@@ -191,8 +191,8 @@ public class GeneticAlgorithm
     private Solution[] currentGeneration;
     private Solution bestSolution;
     private string bestSolutionFile = "Assets/Resources/bestSolution.txt";
-    
-    public void startGenetic()
+
+    public GeneticAlgorithm(int eventCount)
     {
         populationSize = 500; //500
         mutationRate = 0.15f; //0.15
@@ -201,10 +201,13 @@ public class GeneticAlgorithm
         validationFactor = 50.0f; //50
         emptyFactor = 40.0f; //40
 
-        genotypeSize = MapManager.Instance.eventTiles.Count - 1;
+        genotypeSize = eventCount - 1;
         generationIndex = 0;
         currentGeneration = new Solution[populationSize];
-        
+    }
+    
+    public void startGenetic()
+    {
         fistGeneration();
         bestSolution.printGenotype();
         Debug.Log("Valid Error: " + bestSolution.validationError());
@@ -273,12 +276,44 @@ public class GeneticAlgorithm
         }
     }
 
+    //SHARE SAVED RESULT
+    public List<(float, List<Character>)> getResults()
+    {
+        Solution savedSolution = getSavedSolution();
+        // Debug.Log("Score = " + savedSolution.score + ", isValid = " + savedSolution.isValid() + ", Empty Error = " + savedSolution.geneEmptyError());
+        // savedSolution.printGenotype();
+        List<(float, List<Character>)> results = new List<(float, List<Character>)>();
+        for (int i = 0; i < genotypeSize; i++)
+        {
+            int cost = MapManager.Instance.eventTiles[i + 1].timeCost;
+            List<Character> characters = new List<Character>();
+            float sum = 0.0f;
+            foreach (Character character in Enum.GetValues(typeof(Character)))  
+            {  
+                if ((savedSolution.genotype[i] & digit[character]) != 0x0)
+                {
+                    sum += agility[character]; 
+                    characters.Add(character);
+                }
+            }  
+            float geneScore = (float) cost / ((sum > 0.0f) ? sum : 1.0f);
+            results.Add((geneScore, characters));
+        }
+        return results;
+    }
+
     //SAVE RESULTS
+    private Solution getSavedSolution()
+    {
+        byte [] savedGenotype = File.ReadAllBytes(bestSolutionFile);
+        Solution savedSolution = new Solution(savedGenotype, genotypeSize);
+        savedSolution.score = fitness(savedSolution);
+        return savedSolution;
+    }
+
     private void saveBestSolution()
     {
-        byte [] previousBestGenotype = File.ReadAllBytes(bestSolutionFile);
-        Solution previousBest = new Solution(previousBestGenotype, genotypeSize);
-        previousBest.score = fitness(previousBest);
+        Solution previousBest = getSavedSolution();
 
         Debug.Log("----Previous best-----");
         Debug.Log("Score = " + previousBest.score + ", isValid = " + previousBest.isValid() + ", Empty Error = " + previousBest.geneEmptyError());

@@ -9,6 +9,7 @@ enum MapState
     RunningAStar,
     VisualizingAStar,
     FollowingPath,
+    EventFighting,
 }
 
 public class MapManager: SingletonMonoBehaviour<MapManager>
@@ -29,14 +30,17 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     //Time factors
     public float followPathTimeFactor = 0.1f;
     public float visualizerTimeFactor = 0.01f;
+    public float eventFightTimeFactor = 1.0f;
 
     //AStar measures
     private AStar aStar = new AStar();
     [HideInInspector] public float pathCost = 0.0f; //can be modified by follower
     private float totalCost = 0.0f; //sum of all path costs
 
-    //Genetic measuares
-    private GeneticAlgorithm genetic = new GeneticAlgorithm();
+    //Genetic variables
+    private GeneticAlgorithm genetic;
+    private List<(float, List<Character>)> geneticResults;
+    private (float, List<Character>) currentEventFight;
 
     //Update control variables
     private MapState currentState = MapState.None;
@@ -44,11 +48,20 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     private float timeSinceLastUpdate;
 
     public void StartPathFinding() {
-        // follower.changeObjectPosition(eventTiles[0], character.transform);
-        // objective.GetComponent<ParticleSystem>().Play();
-        // goToNextEvent();
+        genetic = new GeneticAlgorithm(eventTiles.Count);
+        geneticResults = genetic.getResults();
+        follower.changeObjectPosition(eventTiles[0], character.transform);
+        objective.GetComponent<ParticleSystem>().Play();
+        
+        // foreach ((float timeCost, List<Character> characters) in geneticResults)
+        // {
+        //     Debug.Log("Event Fight Cost: " + timeCost);
+        //     foreach(Character character in characters)
+        //         Debug.Log(character);
+        // }
+        goToNextEvent();
         // findAllPaths();
-        genetic.startGenetic();
+        // genetic.startGenetic();
     }
 
     private void goToNextEvent()
@@ -156,6 +169,21 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             {
                 Debug.Log("Path Cost: " + pathCost.ToString());
                 totalCost += pathCost;
+                timeSinceLastUpdate = 0.0f;
+                currentEventFight = geneticResults[currentEventIndex + 1];
+                currentState = MapState.EventFighting;
+            }
+        }
+        else if (currentState == MapState.EventFighting)
+        {
+            (float timeCost, List<Character> characters) = currentEventFight;
+            float factor = eventFightTimeFactor * timeCost;
+            int updateTimes = calculateUpdateTimes(factor);
+            if (updateTimes >= 1 || geneticResults == null)
+            {
+                Debug.Log("Event Fight Cost: " + timeCost);
+                foreach(Character character in characters)
+                    Debug.Log(character);
                 goToNextEvent();
             }
         }

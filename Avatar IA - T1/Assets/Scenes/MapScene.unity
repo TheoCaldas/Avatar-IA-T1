@@ -389,6 +389,7 @@ MonoBehaviour:
   objective: {fileID: 1406145840}
   followPathTimeFactor: 0.1
   visualizerTimeFactor: 0.01
+  eventFightTimeFactor: 0.01
   pathCost: 0
 --- !u!4 &657728816
 Transform:
