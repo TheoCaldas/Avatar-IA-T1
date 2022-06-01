@@ -141,8 +141,6 @@ public class GeneticAlgorithm
     
     public void startGenetic()
     {
-        //TO DO: Crossover
-        //TO DO: Mutation
         //TO DO: Save best solution
         populationSize = 100;
         mutationRate = 0.1f;
@@ -163,6 +161,8 @@ public class GeneticAlgorithm
 
         //next gens
         Solution[] selectedParents = solutionSelection(nParents);
+        for(int i = 0; i < populationSize; i++)
+            mutate(currentGeneration[i], mutationRate);
         bestSolution = currentGeneration[0];
         Debug.Log("Generation: " + generationIndex + ", Best Solution Score: " + bestSolution.score);
 
@@ -175,6 +175,9 @@ public class GeneticAlgorithm
                 currentGeneration[i].score = fitness(currentGeneration[i]);
 
             selectedParents = solutionSelection(nParents);
+            for(int i = 0; i < populationSize; i++)
+                mutate(currentGeneration[i], mutationRate);
+
             if (currentGeneration[0].score < bestSolution.score)
                 bestSolution = currentGeneration[0];
 
@@ -289,5 +292,46 @@ public class GeneticAlgorithm
             score += geneScore;
         }
         return score;
+    }
+
+    private (bool, byte) invertSignal(byte gen, byte mask)
+    {
+        if((mask & gen) != 0x0) //if is on
+        {
+            gen &= (byte) ~mask;
+            return (true, gen);
+        }
+        gen |= mask;
+        return (false, gen);
+    }
+
+    private void mutate(Solution solution, float mutationRate)
+    {
+        float randomFactor = UnityEngine.Random.Range(0.0f, 1.0f); 
+        if (randomFactor > mutationRate) return;
+
+        int randomGene = UnityEngine.Random.Range(0, genotypeSize);
+        int randomShift = UnityEngine.Random.Range(0, 7);
+        byte d = (byte) (0x1 << randomShift);
+
+        (bool isOn, byte changedGene) = invertSignal(solution.genotype[randomGene], d);
+        solution.genotype[randomGene] = changedGene;
+
+        for (int i = 0; i < genotypeSize; i++) //does not change solution validation
+        {
+            if (i != randomGene)
+            {
+                if (isOn)
+                {
+                    if ((d & solution.genotype[i]) == 0x0)
+                        (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
+                }
+                else
+                {
+                    if ((d & solution.genotype[i]) != 0x0)
+                        (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
+                }
+            }
+        }
     }
 }
