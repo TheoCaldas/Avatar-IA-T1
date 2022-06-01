@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 
 enum Character
 {
@@ -189,16 +190,16 @@ public class GeneticAlgorithm
     private int generationIndex;
     private Solution[] currentGeneration;
     private Solution bestSolution;
+    private string bestSolutionFile = "Assets/Resources/bestSolution.txt";
     
     public void startGenetic()
     {
-        //TO DO: Save best solution
         populationSize = 100;
         mutationRate = 0.15f;
         maxGenerations = 100;
         nParents = 20;
-        validationFactor = 40.0f;
-        emptyFactor = 40.0f;
+        validationFactor = 50.0f;
+        emptyFactor = 30.0f;
 
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
@@ -217,6 +218,8 @@ public class GeneticAlgorithm
         Debug.Log("Empty Error: " + bestSolution.geneEmptyError());
         Debug.Log("Is Valid: " + bestSolution.isValid());
         bestSolution.printResidual();
+
+        saveBestSolution();
     }
 
     //GENERATIONS
@@ -270,6 +273,24 @@ public class GeneticAlgorithm
         }
     }
 
+    //SAVE RESULTS
+    private void saveBestSolution()
+    {
+        byte [] previousBestGenotype = File.ReadAllBytes(bestSolutionFile);
+        Solution previousBest = new Solution(previousBestGenotype, genotypeSize);
+        previousBest.score = fitness(previousBest);
+
+        Debug.Log("Previous best = " + previousBest.score);
+
+        if (bestSolution.score < previousBest.score)
+        {
+            Debug.Log("NEW BEST!");
+            File.WriteAllBytes(bestSolutionFile, bestSolution.genotype);
+        }
+            
+    }
+
+    //CREATIONISM
     private void mixCurrentGenWithRandomSolutions()
     {   
         for(int i = 0; i < populationSize; i++)
