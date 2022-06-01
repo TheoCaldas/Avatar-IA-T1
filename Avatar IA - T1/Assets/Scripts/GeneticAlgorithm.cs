@@ -151,7 +151,12 @@ public class GeneticAlgorithm
         generationIndex = 0;
         currentGeneration = new Solution[populationSize];
         
-        //first gen inicialization
+        fistGeneration();
+        generationsLoop();
+    }
+
+    private void fistGeneration()
+    {
         generationIndex++;
         for (int i = 0; i < populationSize; i++)
         {
@@ -159,25 +164,27 @@ public class GeneticAlgorithm
             currentGeneration[i].score = fitness(currentGeneration[i]);
         }
 
-        //next gens
-        Solution[] selectedParents = solutionSelection(nParents);
-        for(int i = 0; i < populationSize; i++)
-            mutate(currentGeneration[i], mutationRate);
+        sortCurrentGenerationByScore();
         bestSolution = currentGeneration[0];
         Debug.Log("Generation: " + generationIndex + ", Best Solution Score: " + bestSolution.score);
+    }
 
+    private void generationsLoop()
+    {
+        Solution[] selectedParents;
         while (generationIndex < maxGenerations)
         {
             generationIndex++;
+
+            selectedParents = solutionSelection(currentGeneration, nParents);
             currentGeneration = crossOver(selectedParents, nParents, populationSize);
-
             for(int i = 0; i < populationSize; i++)
-                currentGeneration[i].score = fitness(currentGeneration[i]);
-
-            selectedParents = solutionSelection(nParents);
-            for(int i = 0; i < populationSize; i++)
+            {
                 mutate(currentGeneration[i], mutationRate);
-
+                currentGeneration[i].score = fitness(currentGeneration[i]);
+            }
+            
+            sortCurrentGenerationByScore();
             if (currentGeneration[0].score < bestSolution.score)
                 bestSolution = currentGeneration[0];
 
@@ -237,20 +244,23 @@ public class GeneticAlgorithm
         return children;
     }
 
-    private Solution[] solutionSelection(int nParents) //using rollette method
+    private void sortCurrentGenerationByScore()
     {
         Array.Sort(currentGeneration, (a, b) => a.score.CompareTo(b.score));
+    }
 
+    private Solution[] solutionSelection(Solution[] currentGen, int nParents) //using rollette method
+    {
         float[] probabilities = new float[populationSize];
         bool[] isSelected = new bool[populationSize];
 
         float scoreSum = 0.0f;
         for (int i = 0; i < populationSize; i++)
-            scoreSum += currentGeneration[i].score;
+            scoreSum += currentGen[i].score;
         for (int i = 0; i < populationSize; i++)
         {
             isSelected[i] = false;
-            probabilities[i] = 1.0f - (currentGeneration[i].score / scoreSum);
+            probabilities[i] = 1.0f - (currentGen[i].score / scoreSum);
             if (i > 0)
                 probabilities[i] += probabilities[i - 1];
         }
@@ -264,7 +274,7 @@ public class GeneticAlgorithm
             {
                 if (probabilities[i] >= r && !isSelected[i])
                 {
-                    selectedParents[j] = currentGeneration[i];
+                    selectedParents[j] = currentGen[i];
                     isSelected[i] = true;
                     j++;
                     break;
