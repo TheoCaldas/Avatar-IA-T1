@@ -194,12 +194,12 @@ public class GeneticAlgorithm
     
     public void startGenetic()
     {
-        populationSize = 100;
-        mutationRate = 0.15f;
-        maxGenerations = 100;
-        nParents = 20;
-        validationFactor = 50.0f;
-        emptyFactor = 30.0f;
+        populationSize = 500; //500
+        mutationRate = 0.15f; //0.15
+        maxGenerations = 50; //50
+        nParents = 30; //30
+        validationFactor = 50.0f; //50
+        emptyFactor = 40.0f; //40
 
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
@@ -240,7 +240,7 @@ public class GeneticAlgorithm
     private void generationsLoop()
     {
         Solution[] selectedParents;
-        int genEqualsLimit = 100;
+        int genEqualsLimit = 5;
         int genEqualsCount = 0;
         while (generationIndex < maxGenerations)
         {
@@ -280,14 +280,14 @@ public class GeneticAlgorithm
         Solution previousBest = new Solution(previousBestGenotype, genotypeSize);
         previousBest.score = fitness(previousBest);
 
-        Debug.Log("Previous best = " + previousBest.score);
+        Debug.Log("----Previous best-----");
+        Debug.Log("Score = " + previousBest.score + ", isValid = " + previousBest.isValid() + ", Empty Error = " + previousBest.geneEmptyError());
 
-        if (bestSolution.score < previousBest.score)
+        if (bestSolution.score < previousBest.score && bestSolution.isValid() && bestSolution.geneEmptyError() == 0)
         {
             Debug.Log("NEW BEST!");
             File.WriteAllBytes(bestSolutionFile, bestSolution.genotype);
         }
-            
     }
 
     //CREATIONISM
