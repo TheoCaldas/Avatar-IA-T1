@@ -46,7 +46,28 @@ public class Solution
         return true;
     }
 
+    public float geneEmptyError()
+    {
+        int emptyCount = 0;
+        for (int i = 0; i < genSize; i++)
+        {
+            if (genotype[i] == 0x0)
+                emptyCount++;
+        }
+        return (float) emptyCount;
+    }
+
     public float validationError()
+    {
+        float[] r = residual();
+
+        float error = 0.0f;
+        for (int d = 0; d < 7; d++)
+            error += r[d] * r[d];
+        return error;//Mathf.Sqrt(error);
+    }
+
+    public float[] residual()
     {
         byte a = 0x1;
         float[] residual = new float[7];
@@ -62,10 +83,7 @@ public class Solution
             a = unchecked((byte)(a << 1));
             residual[d] = energyPoints;
         }
-        float error = 0.0f;
-        for (int d = 0; d < 7; d++)
-            error += residual[d] * residual[d];
-        return Mathf.Sqrt(error);
+        return residual;
     }
 
     static public Solution buildPossibleRandomSolution(int size) //each character can be chosen 8 times max
@@ -88,7 +106,7 @@ public class Solution
         for (int d = 0; d < 8; d++)
         {
             a = unchecked((byte)(a << 1));
-            if (UnityEngine.Random.Range(0, 3) == 0 && energyPoints[d] > 0)
+            if (UnityEngine.Random.Range(0, 10) == 0 && energyPoints[d] > 0)
             {
                 a += one;
                 energyPoints[d]--;
@@ -118,11 +136,20 @@ public class Solution
         return a;
     }
 
-    public void print()
+    public void printGenotype()
     {
         string str = "";
         for (int i = 0; i < genSize; i++)
             str += genotype[i].ToString("X") + ", ";
+        Debug.Log(str);
+    }
+
+    public void printResidual()
+    {
+        float[] r = residual();
+        string str = "";
+        for (int i = 0; i < 7; i++)
+            str += r[i].ToString() + ", ";
         Debug.Log(str);
     }
 }
@@ -155,6 +182,7 @@ public class GeneticAlgorithm
     private int maxGenerations;
     private int nParents;
     private float validationFactor;
+    private float emptyFactor;
 
     //Other
     private int genotypeSize;
@@ -166,24 +194,29 @@ public class GeneticAlgorithm
     {
         //TO DO: Save best solution
         populationSize = 100;
-        mutationRate = 0.1f;
+        mutationRate = 0.15f;
         maxGenerations = 100;
-        nParents = 30;
-        validationFactor = 50.0f;
+        nParents = 20;
+        validationFactor = 40.0f;
+        emptyFactor = 40.0f;
 
         genotypeSize = MapManager.Instance.eventTiles.Count - 1;
         generationIndex = 0;
         currentGeneration = new Solution[populationSize];
         
         fistGeneration();
-        bestSolution.print();
-        Debug.Log("Error: " + bestSolution.validationError());
+        bestSolution.printGenotype();
+        Debug.Log("Valid Error: " + bestSolution.validationError());
+        Debug.Log("Empty Error: " + bestSolution.geneEmptyError());
         Debug.Log("Is Valid: " + bestSolution.isValid());
+        bestSolution.printResidual();
 
         generationsLoop();
-        bestSolution.print();
-        Debug.Log("Error: " + bestSolution.validationError());
+        bestSolution.printGenotype();
+        Debug.Log("Valid Error: " + bestSolution.validationError());
+        Debug.Log("Empty Error: " + bestSolution.geneEmptyError());
         Debug.Log("Is Valid: " + bestSolution.isValid());
+        bestSolution.printResidual();
     }
 
     //GENERATIONS
@@ -198,12 +231,14 @@ public class GeneticAlgorithm
 
         sortCurrentGenerationByScore();
         bestSolution = currentGeneration[0];
-        Debug.Log("Generation: " + generationIndex + ", Best Solution Score: " + bestSolution.score);
+        Debug.Log("Generation: " + generationIndex + ", Best Solution Score: " + bestSolution.score.ToString("f6"));
     }
 
     private void generationsLoop()
     {
         Solution[] selectedParents;
+        int genEqualsLimit = 100;
+        int genEqualsCount = 0;
         while (generationIndex < maxGenerations)
         {
             generationIndex++;
@@ -218,9 +253,33 @@ public class GeneticAlgorithm
             
             sortCurrentGenerationByScore();
             if (currentGeneration[0].score < bestSolution.score)
+            {
                 bestSolution = currentGeneration[0];
+                genEqualsCount = 0;
+            }
+            else if (currentGeneration[0].score == bestSolution.score)
+                genEqualsCount++;
 
-            Debug.Log("Generation: " + generationIndex + ", Best Solution Score: " + bestSolution.score);
+            if (genEqualsCount >= genEqualsLimit)
+            {
+                mixCurrentGenWithRandomSolutions();
+                sortCurrentGenerationByScore();
+            }
+        
+            Debug.Log("Generation: " + generationIndex + ", Best Solution Score: " + bestSolution.score.ToString("f6"));
+        }
+    }
+
+    private void mixCurrentGenWithRandomSolutions()
+    {   
+        for(int i = 0; i < populationSize; i++)
+        {
+            if (i % 2 == 0)
+            {
+                Solution random = Solution.buildPossibleRandomSolution(genotypeSize);
+                currentGeneration[i] = random;
+                currentGeneration[i].score = fitness(currentGeneration[i]);
+            }
         }
     }
 
@@ -243,7 +302,7 @@ public class GeneticAlgorithm
             score += geneScore;
         }
 
-        return score + solution.validationError() * validationFactor;
+        return (score) + (solution.validationError() * validationFactor) + (solution.geneEmptyError() * emptyFactor); //* ((float) generationIndex));
     }
 
     //PARENTS SELECTION
@@ -395,21 +454,21 @@ public class GeneticAlgorithm
         (bool isOn, byte changedGene) = invertSignal(solution.genotype[randomGene], d);
         solution.genotype[randomGene] = changedGene;
 
-        for (int i = 0; i < genotypeSize; i++) //does not change solution validation
-        {
-            if (i != randomGene)
-            {
-                if (isOn)
-                {
-                    if ((d & solution.genotype[i]) == 0x0)
-                        (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
-                }
-                else
-                {
-                    if ((d & solution.genotype[i]) != 0x0)
-                        (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
-                }
-            }
-        }
+        // for (int i = 0; i < genotypeSize; i++) //does not change solution validation
+        // {
+        //     if (i != randomGene)
+        //     {
+        //         if (isOn)
+        //         {
+        //             if ((d & solution.genotype[i]) == 0x0)
+        //                 (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
+        //         }
+        //         else
+        //         {
+        //             if ((d & solution.genotype[i]) != 0x0)
+        //                 (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
+        //         }
+        //     }
+        // }
     }
 }
