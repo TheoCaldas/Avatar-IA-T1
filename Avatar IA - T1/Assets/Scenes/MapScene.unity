@@ -235,6 +235,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 1.9
   amplitude: 0.38
+  lineInterval: 0.82
+  xOffset: -0.693
+  zOffset: -0.235
 --- !u!1 &113001118
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +363,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 153812364}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0009998679, y: -0.51, z: -0.012000001}
+  m_LocalPosition: {x: 0.063, y: -0.51, z: -0.012000001}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -444,6 +447,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 0.46
   amplitude: 0.11
+  lineInterval: 0.28
+  xOffset: 0.164
+  zOffset: -0.012
 --- !u!1 &160125014
 GameObject:
   m_ObjectHideFlags: 0
@@ -2130,6 +2136,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 0.53
   amplitude: 0.31
+  lineInterval: 2.46
+  xOffset: 0.061
+  zOffset: -0.541
 --- !u!1 &814292258
 GameObject:
   m_ObjectHideFlags: 0
@@ -9017,6 +9026,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 2.47
   amplitude: 0.47
+  lineInterval: 2
+  xOffset: -0.565
+  zOffset: 0.246
 --- !u!1 &1519225379
 GameObject:
   m_ObjectHideFlags: 0
@@ -9129,6 +9141,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 5.93
   amplitude: 0.64
+  lineInterval: 7.87
+  xOffset: 1.489
+  zOffset: -0.008
 --- !u!1 &1533823860
 GameObject:
   m_ObjectHideFlags: 0
@@ -10258,6 +10273,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 2.82
   amplitude: 1.15
+  lineInterval: 4.72
+  xOffset: 0.471
+  zOffset: 0.4
 --- !u!1 &1993002145
 GameObject:
   m_ObjectHideFlags: 0
@@ -10370,6 +10388,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   period: 3.04
   amplitude: 0.56
+  lineInterval: 1
+  xOffset: -1.139
+  zOffset: 0
 --- !u!1 &2073791869
 GameObject:
   m_ObjectHideFlags: 0
