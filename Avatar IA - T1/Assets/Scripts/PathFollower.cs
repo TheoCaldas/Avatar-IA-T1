@@ -32,6 +32,9 @@ public class PathFollower
             Vector3 targetPosition = new Vector3( objective.position.x, transform.position.y, objective.position.z) ;
             transform.LookAt( targetPosition ) ;
             transform.localEulerAngles += new Vector3(0, 90, 0);
+            Transform t = transform.Find("Appa");
+            if (t != null)
+                t.localEulerAngles = new Vector3(0, 0, 0);
         }
     }
 
