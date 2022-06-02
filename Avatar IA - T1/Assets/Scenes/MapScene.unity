@@ -1536,8 +1536,8 @@ MonoBehaviour:
   character: {fileID: 581531933}
   objective: {fileID: 1406145840}
   followPathTimeFactor: 0.1
-  visualizerTimeFactor: 0
-  eventFightTimeFactor: 0.1
+  visualizerTimeFactor: 0.01
+  eventFightTimeFactor: 0.2
   pathCost: 0
   totalCost: 0
   geneticCost: 0
