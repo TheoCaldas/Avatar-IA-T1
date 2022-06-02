@@ -28,31 +28,12 @@ public class Solution
         genSize = size;
     }
 
-    public bool isValid()
-    {
-        byte a = 0x1;
-        for (int d = 0; d < 7; d++)
-        {
-            int energyPoints = 8;
-            for (int i = 0; i < genSize; i++)
-            {
-                if ((a & genotype[i]) != 0x0)
-                    energyPoints--;
-                
-                if (energyPoints < 0)
-                    return false;
-            }
-            a = unchecked((byte)(a << 1));
-        }
-        return true;
-    }
-
     public float geneEmptyError()
     {
         int emptyCount = 0;
         for (int i = 0; i < genSize; i++)
         {
-            if (genotype[i] == 0x0)
+            if (genotype[i] == 0x0 || genotype[i] == 0x80)
                 emptyCount++;
         }
         return (float) emptyCount;
@@ -60,22 +41,24 @@ public class Solution
 
     public float validationError()
     {
-        float[] r = residual();
+        int[] r = residual();
 
         float error = 0.0f;
         for (int d = 0; d < 7; d++)
-            error += r[d] * r[d];
-        return error;//Mathf.Sqrt(error);
+            error += (float) (r[d] * r[d]);
+        return error;
     }
 
-    public float[] residual()
+    public int[] residual()
     {
         byte a = 0x1;
-        float[] residual = new float[7];
+        int[] residual = new int[7];
 
         for (int d = 0; d < 7; d++)
         {
             int energyPoints = 8;
+            if (d == 6)
+                energyPoints = 7;
             for (int i = 0; i < genSize; i++)
             {
                 if ((a & genotype[i]) != 0x0)
@@ -87,54 +70,43 @@ public class Solution
         return residual;
     }
 
-    static public Solution buildPossibleRandomSolution(int size) //each character can be chosen 8 times max
+    static public Solution buildValidRandomSolution(int size) //each character can be chosen 8 times max and every byte > 0x0
     {
-        int[] energyPoints = new int[8];
-
-        for (int i = 0; i < 8; i++)
-            energyPoints[i] = 8;
-
-        byte[] solution = new byte[size];
-        for (int i = 0; i < size; i++)
-            solution[i] = buildPossibleRandomByte(energyPoints);
-        return new Solution(solution, size);
-    }
-
-    static private byte buildPossibleRandomByte(int[] energyPoints)
-    {
-        byte a = 0x0;
-        byte one = 0x1;
-        for (int d = 0; d < 8; d++)
+        List<(int, int)> energyPoints = new List<(int, int)>();
+        for (int j = 0; j < 7; j++)
         {
-            a = unchecked((byte)(a << 1));
-            if (UnityEngine.Random.Range(0, 10) == 0 && energyPoints[d] > 0)
-            {
-                a += one;
-                energyPoints[d]--;
-            }
+            if (j == 6)
+                energyPoints.Add((j, 7));
+            else
+                energyPoints.Add((j, 8));
         }
-        return a;
-    }
 
-    static public Solution buildRandomSolution(int size)
-    {
-        byte[] solution = new byte[size];
-        for (int i = 0; i < size; i++)
-            solution[i] = buildRandomByte();
-        return new Solution(solution, size);
-    }
+        byte[] genotype = new byte[size];
+        for (int j = 0; j < size; j++)
+            genotype[j] = 0x0;
+        byte a = 0x1;
+        byte shift;
 
-    static private byte buildRandomByte()
-    {
-        byte a = 0x0;
-        byte zero = 0x0;
-        byte one = 0x1;
-        for (int d = 0; d < 8; d++)
+        int i = size - 1;
+        int pointSum = 55;
+        while (pointSum > 0)
         {
-            a = unchecked((byte)(a << 1));
-            a += (UnityEngine.Random.Range(0, 2) == 0) ? zero : one;
+            int randomIndex = UnityEngine.Random.Range(0, energyPoints.Count);
+            (int digit, int points) = energyPoints[randomIndex];
+            shift = unchecked((byte)(a << digit));
+
+            genotype[i] += shift;
+            pointSum--;
+            if (points - 1 > 0)
+                energyPoints[randomIndex] = (digit, points - 1);
+            else
+                energyPoints.RemoveAt(randomIndex);
+            i--;
+            if (i < 0)
+                i += size;
+
         }
-        return a;
+        return new Solution(genotype, size);
     }
 
     public void printGenotype()
@@ -147,7 +119,7 @@ public class Solution
 
     public void printResidual()
     {
-        float[] r = residual();
+        int[] r = residual();
         string str = "";
         for (int i = 0; i < 7; i++)
             str += r[i].ToString() + ", ";
@@ -190,16 +162,19 @@ public class GeneticAlgorithm
     private int generationIndex;
     private Solution[] currentGeneration;
     private Solution bestSolution;
-    private string bestSolutionFile = "Assets/Resources/bestSolution.txt";
+    private string bestSolutionFile = "Assets/Resources/bestSolution1.txt";
+    private float initialTime;
+    private float maxTime;
 
     public GeneticAlgorithm(int eventCount)
     {
-        populationSize = 500; //500
-        mutationRate = 0.15f; //0.15
-        maxGenerations = 50; //50
-        nParents = 30; //30
-        validationFactor = 50.0f; //50
+        populationSize = 5000; //5000
+        mutationRate = 0.2f; //0.2
+        maxGenerations = 100; //100
+        nParents = 101; //101
+        validationFactor = 70.0f; //70
         emptyFactor = 40.0f; //40
+        maxTime = 60.0f; //60
 
         genotypeSize = eventCount - 1;
         generationIndex = 0;
@@ -210,16 +185,13 @@ public class GeneticAlgorithm
     {
         fistGeneration();
         bestSolution.printGenotype();
-        Debug.Log("Valid Error: " + bestSolution.validationError());
-        Debug.Log("Empty Error: " + bestSolution.geneEmptyError());
-        Debug.Log("Is Valid: " + bestSolution.isValid());
+        Debug.Log("Valid Error: " + bestSolution.validationError() + ", Empty Error: " + bestSolution.geneEmptyError());
         bestSolution.printResidual();
 
+        initialTime = Time.realtimeSinceStartup;
         generationsLoop();
         bestSolution.printGenotype();
-        Debug.Log("Valid Error: " + bestSolution.validationError());
-        Debug.Log("Empty Error: " + bestSolution.geneEmptyError());
-        Debug.Log("Is Valid: " + bestSolution.isValid());
+        Debug.Log("Valid Error: " + bestSolution.validationError() + ", Empty Error: " + bestSolution.geneEmptyError());
         bestSolution.printResidual();
 
         saveBestSolution();
@@ -231,7 +203,7 @@ public class GeneticAlgorithm
         generationIndex++;
         for (int i = 0; i < populationSize; i++)
         {
-            currentGeneration[i] = Solution.buildPossibleRandomSolution(genotypeSize);
+            currentGeneration[i] = Solution.buildValidRandomSolution(genotypeSize);
             currentGeneration[i].score = fitness(currentGeneration[i]);
         }
 
@@ -243,9 +215,10 @@ public class GeneticAlgorithm
     private void generationsLoop()
     {
         Solution[] selectedParents;
-        int genEqualsLimit = 5;
+        int genEqualsLimit = 10;
         int genEqualsCount = 0;
-        while (generationIndex < maxGenerations)
+        // while (generationIndex < maxGenerations)
+        while (Time.realtimeSinceStartup - initialTime <= maxTime)
         {
             generationIndex++;
 
@@ -316,9 +289,9 @@ public class GeneticAlgorithm
         Solution previousBest = getSavedSolution();
 
         Debug.Log("----Previous best-----");
-        Debug.Log("Score = " + previousBest.score + ", isValid = " + previousBest.isValid() + ", Empty Error = " + previousBest.geneEmptyError());
+        Debug.Log("Score = " + previousBest.score + "Valid Error: " + previousBest.validationError() + ", Empty Error = " + previousBest.geneEmptyError());
 
-        if (bestSolution.score < previousBest.score && bestSolution.isValid() && bestSolution.geneEmptyError() == 0)
+        if (bestSolution.score < previousBest.score && bestSolution.validationError() == 0.0f && bestSolution.geneEmptyError() == 0)
         {
             Debug.Log("NEW BEST!");
             File.WriteAllBytes(bestSolutionFile, bestSolution.genotype);
@@ -330,12 +303,9 @@ public class GeneticAlgorithm
     {   
         for(int i = 0; i < populationSize; i++)
         {
-            if (i % 2 == 0)
-            {
-                Solution random = Solution.buildPossibleRandomSolution(genotypeSize);
-                currentGeneration[i] = random;
-                currentGeneration[i].score = fitness(currentGeneration[i]);
-            }
+            Solution random = Solution.buildValidRandomSolution(genotypeSize);
+            currentGeneration[i] = random;
+            currentGeneration[i].score = fitness(currentGeneration[i]);
         }
     }
 
@@ -403,6 +373,41 @@ public class GeneticAlgorithm
     }
     
     //CREATE CHILDREN
+
+    private void swap(byte[] genotype, int i, int j)
+    {
+        byte temp = genotype[i];
+        genotype[i] = genotype[j];
+        genotype[j] = temp;
+    }
+
+    private (Solution, Solution) createChildrenBySwap (Solution parent1, Solution parent2) //genes are swapped randomly
+    {
+        byte[] genotypeChild1 = new byte[genotypeSize];
+        byte[] genotypeChild2 = new byte[genotypeSize];
+
+        for (int i = 0; i < genotypeSize; i++)
+        {
+            genotypeChild1[i] = parent1.genotype[i];
+            genotypeChild2[i] = parent2.genotype[i];
+        }
+
+        int random1 = 0;
+        int random2 = 0;
+        while (random1 == random2)
+        {
+            random1 = UnityEngine.Random.Range(0, genotypeSize);
+            random2 = UnityEngine.Random.Range(0, genotypeSize);
+        }        
+
+        swap(genotypeChild1, random1, random2);
+        swap(genotypeChild2, random1, random2);
+
+        Solution child1 = new Solution(genotypeChild1, genotypeSize);
+        Solution child2 = new Solution(genotypeChild2, genotypeSize);
+        return (child1, child2);
+    }
+
     private (Solution, Solution) createChildrenRandomGenes (Solution parent1, Solution parent2) //genes are swapped randomly
     {
         byte[] genotypeChild1 = new byte[genotypeSize];
@@ -475,6 +480,8 @@ public class GeneticAlgorithm
             if (isPairChosen(chosenPairs, randomIndex1, randomIndex2)) continue;
             chosenPairs[randomIndex1].Add(randomIndex2);
             (Solution child1, Solution child2) = createChildrenRandomGenes(parents[randomIndex1], parents[randomIndex2]);
+            if (Time.realtimeSinceStartup - initialTime > maxTime / 2.0f)
+                (child1, child2) = createChildrenBySwap(parents[randomIndex1], parents[randomIndex2]);
             children[childrenCount] = child1;
             childrenCount++;
             if (childrenCount < nChildren)
@@ -509,22 +516,5 @@ public class GeneticAlgorithm
 
         (bool isOn, byte changedGene) = invertSignal(solution.genotype[randomGene], d);
         solution.genotype[randomGene] = changedGene;
-
-        // for (int i = 0; i < genotypeSize; i++) //does not change solution validation
-        // {
-        //     if (i != randomGene)
-        //     {
-        //         if (isOn)
-        //         {
-        //             if ((d & solution.genotype[i]) == 0x0)
-        //                 (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
-        //         }
-        //         else
-        //         {
-        //             if ((d & solution.genotype[i]) != 0x0)
-        //                 (isOn, solution.genotype[i]) = invertSignal(solution.genotype[randomGene], d);
-        //         }
-        //     }
-        // }
     }
 }

@@ -49,6 +49,8 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     public void StartPathFinding() {
         genetic = new GeneticAlgorithm(eventTiles.Count);
+        // genetic.startGenetic();
+
         geneticResults = genetic.getResults();
         follower.changeObjectPosition(eventTiles[0], character.transform);
         objective.GetComponent<ParticleSystem>().Play();
@@ -59,9 +61,9 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         //     foreach(Character character in characters)
         //         Debug.Log(character);
         // }
+
         goToNextEvent();
         // findAllPaths();
-        // genetic.startGenetic();
     }
 
     private void goToNextEvent()
