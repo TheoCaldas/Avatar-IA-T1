@@ -24,6 +24,17 @@ public class PathFollower
         return false;
     }
 
+    public void rotateCharacterTowardsNext(Transform transform)
+    {
+        if (currentIndex < currentPath.Count - 1)
+        {
+            Transform objective = currentPath[currentIndex + 1].tile3DRef.transform;
+            Vector3 targetPosition = new Vector3( objective.position.x, transform.position.y, objective.position.z) ;
+            transform.LookAt( targetPosition ) ;
+            transform.localEulerAngles += new Vector3(0, 90, 0);
+        }
+    }
+
     public void changeObjectPosition(Tile tile, Transform transform)
     {
         transform.position = getTopTilePos(tile, transform);

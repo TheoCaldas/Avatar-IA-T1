@@ -147,7 +147,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     private void Update() 
     {
-        objectLookAtEvent(character.transform);
+        // objectLookAtEvent(character.transform);
 
         if (currentState == MapState.Ready && currentEventIndex < eventTiles.Count - 1)
         {
@@ -179,6 +179,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             {
                 updateTimes = calculateUpdateTimes(factor);
                 follower.lerpToNext(character.transform, timeSinceLastUpdate / factor);
+                follower.rotateCharacterTowardsNext(character.transform.GetChild(0));
             }
 
             bool didChange = true;

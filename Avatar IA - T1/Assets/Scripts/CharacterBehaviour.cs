@@ -49,6 +49,6 @@ public class CharacterBehaviour : MonoBehaviour
 
         transform.localPosition = Vector3.Lerp(originalPos, linePos, currentTime / lineInterval);
         transform.localPosition += new Vector3(0, yOffset, 0);
-        // MapManager.Instance.objectLookAtEvent(transform);
+        MapManager.Instance.objectLookAtEvent(transform);
     }
 }
