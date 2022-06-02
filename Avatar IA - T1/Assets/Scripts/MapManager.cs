@@ -35,14 +35,15 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     //AStar measures
     private AStar aStar = new AStar();
     [HideInInspector] public float pathCost = 0.0f; //can be modified by follower
-    private float totalCost = 0.0f; //sum of all path costs
+    [HideInInspector] public float totalCost = 0.0f; //sum of all path costs
 
     //Genetic variables
     private GeneticAlgorithm genetic;
     private List<(float, List<Character>)> geneticResults;
     private (float, List<Character>) currentEventFight;
-    private float geneticCost = 0.0f;
-    private int[] charactersEnergy = {0, 0, 0, 0, 0, 0, 0};
+    [HideInInspector] public float geneticCost = 0.0f;
+    [HideInInspector] public float currentFightCost = 0.0f;
+    [HideInInspector] public int[] charactersEnergy = {0, 0, 0, 0, 0, 0, 0};
 
     //Update control variables
     private MapState currentState = MapState.None;
@@ -68,6 +69,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         visualizer.reset();
         follower.reset();
         pathCost = 0.0f;
+        currentFightCost = 0.0f;
         timeSinceLastUpdate = 0.0f;
 
         if (currentEventIndex + 1 >= eventTiles.Count)
@@ -196,6 +198,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         {
             (float timeCost, List<Character> characters) = currentEventFight;
             float factor = eventFightTimeFactor * timeCost;
+            currentFightCost = timeCost;
             int updateTimes = calculateUpdateTimes(factor);
             if (updateTimes >= 1 || geneticResults == null)
             {
