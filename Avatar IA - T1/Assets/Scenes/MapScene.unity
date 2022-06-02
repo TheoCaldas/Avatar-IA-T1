@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 110364454}
   - component: {fileID: 110364453}
   - component: {fileID: 110364452}
+  - component: {fileID: 110364455}
   m_Layer: 0
   m_Name: Toph
   m_TagString: Untagged
@@ -220,6 +221,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110364450}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &110364455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110364450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 1.9
+  amplitude: 0.38
 --- !u!1 &113001118
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,6 +344,7 @@ GameObject:
   - component: {fileID: 153812368}
   - component: {fileID: 153812367}
   - component: {fileID: 153812366}
+  - component: {fileID: 153812369}
   m_Layer: 0
   m_Name: Appa
   m_TagString: Untagged
@@ -414,6 +430,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 153812364}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &153812369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153812364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 0.46
+  amplitude: 0.11
 --- !u!1 &160125014
 GameObject:
   m_ObjectHideFlags: 0
@@ -1565,9 +1595,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 581531933}
   objective: {fileID: 1406145840}
-  followPathTimeFactor: 0.01
+  followPathTimeFactor: 0.1
   visualizerTimeFactor: 0
-  eventFightTimeFactor: 0.01
+  eventFightTimeFactor: 0.1
   pathCost: 0
   totalCost: 0
   geneticCost: 0
@@ -2000,6 +2030,7 @@ GameObject:
   - component: {fileID: 813584288}
   - component: {fileID: 813584287}
   - component: {fileID: 813584286}
+  - component: {fileID: 813584289}
   m_Layer: 0
   m_Name: Katara
   m_TagString: Untagged
@@ -2085,6 +2116,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 813584284}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &813584289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813584284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 0.53
+  amplitude: 0.31
 --- !u!1 &814292258
 GameObject:
   m_ObjectHideFlags: 0
@@ -8872,6 +8917,7 @@ GameObject:
   - component: {fileID: 1485593829}
   - component: {fileID: 1485593828}
   - component: {fileID: 1485593827}
+  - component: {fileID: 1485593830}
   m_Layer: 0
   m_Name: Zukko
   m_TagString: Untagged
@@ -8957,6 +9003,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1485593825}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1485593830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1485593825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 2.47
+  amplitude: 0.47
 --- !u!1 &1519225379
 GameObject:
   m_ObjectHideFlags: 0
@@ -8969,6 +9029,7 @@ GameObject:
   - component: {fileID: 1519225383}
   - component: {fileID: 1519225382}
   - component: {fileID: 1519225381}
+  - component: {fileID: 1519225384}
   m_Layer: 0
   m_Name: Momo
   m_TagString: Untagged
@@ -9054,6 +9115,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1519225379}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1519225384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1519225379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 5.93
+  amplitude: 0.64
 --- !u!1 &1533823860
 GameObject:
   m_ObjectHideFlags: 0
@@ -10083,6 +10158,7 @@ GameObject:
   - component: {fileID: 1957850693}
   - component: {fileID: 1957850692}
   - component: {fileID: 1957850691}
+  - component: {fileID: 1957850694}
   m_Layer: 0
   m_Name: Sokka
   m_TagString: Untagged
@@ -10168,6 +10244,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1957850689}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1957850694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957850689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 2.82
+  amplitude: 1.15
 --- !u!1 &1993002145
 GameObject:
   m_ObjectHideFlags: 0
@@ -10180,6 +10270,7 @@ GameObject:
   - component: {fileID: 1993002149}
   - component: {fileID: 1993002148}
   - component: {fileID: 1993002147}
+  - component: {fileID: 1993002150}
   m_Layer: 0
   m_Name: Aang
   m_TagString: Untagged
@@ -10265,6 +10356,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993002145}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1993002150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993002145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e74f73aae0cb4b4594998d1da7df840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  period: 3.04
+  amplitude: 0.56
 --- !u!1 &2073791869
 GameObject:
   m_ObjectHideFlags: 0
