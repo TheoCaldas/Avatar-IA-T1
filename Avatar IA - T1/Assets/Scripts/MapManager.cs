@@ -124,8 +124,23 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         return n;
     }
 
+    private void characterLookAtEvent()
+    {
+        if (currentEventIndex < eventTiles.Count - 1)
+        {
+            Transform objective = eventTiles[currentEventIndex + 1].tile3DRef.transform;
+            if (Vector3.Distance(objective.position, character.transform.position) > 1.0)
+            {
+                Vector3 targetPosition = new Vector3( objective.position.x, character.transform.position.y, objective.position.z) ;
+                character.transform.LookAt( targetPosition ) ;
+            }
+        }
+    }
+
     private void Update() 
     {
+        characterLookAtEvent();
+
         if (currentState == MapState.Ready && currentEventIndex < eventTiles.Count - 1)
         {
             currentState = MapState.RunningAStar;
