@@ -155,7 +155,10 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     private void resetScale(int index)
     {
-        (character.transform.GetChild(0)).GetChild(index).localScale = new Vector3(0.15f, 0.15f, 0.15f);
+        Transform t = (character.transform.GetChild(0)).GetChild(index);
+        t.localScale = new Vector3(0.15f, 0.15f, 0.15f);
+        if (t.name == "Appa")
+            t.localScale = new Vector3(0.3f, 0.3f, 0.3f);
     }
 
     private void Update() 
