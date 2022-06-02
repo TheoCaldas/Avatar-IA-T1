@@ -22,5 +22,7 @@ public class TextUpdater : MonoBehaviour
         texts[8].text = (maxLives - MapManager.Instance.charactersEnergy[4]).ToString();
         texts[9].text = (maxLives - MapManager.Instance.charactersEnergy[5]).ToString();
         texts[10].text = (maxLives - MapManager.Instance.charactersEnergy[6]).ToString();
+        texts[11].text = MapManager.Instance.currentEventIndex.ToString();
+        texts[12].text = "/ " + (MapManager.Instance.eventTiles.Count - 1).ToString();
     }
 }

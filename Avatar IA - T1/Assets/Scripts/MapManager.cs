@@ -47,7 +47,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     //Update control variables
     private MapState currentState = MapState.None;
-    private int currentEventIndex = -1;
+    [HideInInspector] public int currentEventIndex = -1;
     private float timeSinceLastUpdate;
 
     public void StartPathFinding() {

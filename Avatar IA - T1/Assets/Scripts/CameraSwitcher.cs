@@ -6,6 +6,7 @@ public class CameraSwitcher : MonoBehaviour
 {
     public GameObject topDownCamera;
     public GameObject thirdPersonCamera;
+    public GameObject canvas;
 
     private int selectedCamera = 1;
 
@@ -16,6 +17,7 @@ public class CameraSwitcher : MonoBehaviour
             selectedCamera = 1;
             topDownCamera.SetActive(true);
             thirdPersonCamera.SetActive(false);
+            canvas.SetActive(true);
         }
 
         if (Input.GetKey("2") && selectedCamera == 1)
@@ -23,6 +25,7 @@ public class CameraSwitcher : MonoBehaviour
             selectedCamera = 2;
             topDownCamera.SetActive(false);
             thirdPersonCamera.SetActive(true);
+            canvas.SetActive(false);
         }
     }
 }
