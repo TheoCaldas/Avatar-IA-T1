@@ -41,6 +41,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     private GeneticAlgorithm genetic;
     private List<(float, List<Character>)> geneticResults;
     private (float, List<Character>) currentEventFight;
+    private float geneticCost = 0.0f;
 
     //Update control variables
     private MapState currentState = MapState.None;
@@ -54,13 +55,6 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         geneticResults = genetic.getResults();
         follower.changeObjectPosition(eventTiles[0], character.transform);
         objective.GetComponent<ParticleSystem>().Play();
-        
-        // foreach ((float timeCost, List<Character> characters) in geneticResults)
-        // {
-        //     Debug.Log("Event Fight Cost: " + timeCost);
-        //     foreach(Character character in characters)
-        //         Debug.Log(character);
-        // }
 
         goToNextEvent();
         // findAllPaths();
@@ -84,7 +78,8 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     private void finish()
     {
         currentState = MapState.None;
-        Debug.Log("Total Cost: " + totalCost.ToString());
+        Debug.Log("AStar Total Cost: " + totalCost.ToString());
+        Debug.Log("Genetic Total Cost: " + geneticCost.ToString());
         objective.GetComponent<ParticleSystem>().Stop();
     }
 
@@ -172,7 +167,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
                 Debug.Log("Path Cost: " + pathCost.ToString());
                 totalCost += pathCost;
                 timeSinceLastUpdate = 0.0f;
-                currentEventFight = geneticResults[currentEventIndex + 1];
+                currentEventFight = geneticResults[currentEventIndex];
                 currentState = MapState.EventFighting;
             }
         }
@@ -184,6 +179,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             if (updateTimes >= 1 || geneticResults == null)
             {
                 Debug.Log("Event Fight Cost: " + timeCost);
+                geneticCost += timeCost;
                 foreach(Character character in characters)
                     Debug.Log(character);
                 goToNextEvent();
