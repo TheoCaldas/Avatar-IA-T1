@@ -42,6 +42,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
     private List<(float, List<Character>)> geneticResults;
     private (float, List<Character>) currentEventFight;
     private float geneticCost = 0.0f;
+    private int[] charactersEnergy = {0, 0, 0, 0, 0, 0, 0};
 
     //Update control variables
     private MapState currentState = MapState.None;
@@ -137,6 +138,11 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
         }
     }
 
+    private void disableCharacter(int index)
+    {
+       (character.transform.GetChild(0)).GetChild(index).gameObject.SetActive(false);
+    }
+
     private void Update() 
     {
         characterLookAtEvent();
@@ -196,7 +202,17 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
                 Debug.Log("Event Fight Cost: " + timeCost);
                 geneticCost += timeCost;
                 foreach(Character character in characters)
-                    Debug.Log(character);
+                {
+                    int index = (int) character;
+                    charactersEnergy[index]++;
+                    if (charactersEnergy[index] >= 8)
+                        disableCharacter(index);
+
+                    // string str = "";
+                    // foreach (int energy in charactersEnergy)
+                    //     str += energy.ToString() + ", ";
+                    // Debug.Log(str);
+                }
                 goToNextEvent();
             }
         }
