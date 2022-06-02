@@ -30,6 +30,12 @@ public class CharacterBehaviour : MonoBehaviour
         int timeCost = 1;
         if (MapManager.Instance.follower.hasPath())
             timeCost = MapManager.Instance.follower.getCurrentTimeCost();
+        else
+            return;
+
+        if (timeCost == 0)
+            return;
+
         float yOffset = amplitude * Mathf.Sin(currentTime * period * 3.0f);
         
         if (timeCost >= 15)

@@ -56,7 +56,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
         geneticResults = genetic.getResults();
         follower.changeObjectPosition(eventTiles[0], character.transform);
-        objective.GetComponent<ParticleSystem>().Play();
+        // objective.GetComponent<ParticleSystem>().Play();
 
         goToNextEvent();
         // findAllPaths();
@@ -64,6 +64,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
 
     private void goToNextEvent()
     {
+        objective.GetComponent<ParticleSystem>().Play();
         currentState = MapState.Ready;
         currentEventIndex++;
         visualizer.reset();
@@ -145,6 +146,18 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
        (character.transform.GetChild(0)).GetChild(index).gameObject.SetActive(false);
     }
 
+    private void scaleCharacter(int index, float factor)
+    {
+        Transform t = (character.transform.GetChild(0)).GetChild(index);
+        t.localScale = factor * new Vector3(2, 2, 2);
+        t.localPosition = factor * new Vector3(0, 3 + index, 0);
+    }
+
+    private void resetScale(int index)
+    {
+        (character.transform.GetChild(0)).GetChild(index).localScale = new Vector3(0.3f, 0.3f, 0.3f);
+    }
+
     private void Update() 
     {
         // objectLookAtEvent(character.transform);
@@ -193,6 +206,7 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
                 timeSinceLastUpdate = 0.0f;
                 currentEventFight = geneticResults[currentEventIndex];
                 currentState = MapState.EventFighting;
+                objective.GetComponent<ParticleSystem>().Stop();
             }
         }
         else if (currentState == MapState.EventFighting)
@@ -200,6 +214,12 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
             (float timeCost, List<Character> characters) = currentEventFight;
             float factor = eventFightTimeFactor * timeCost;
             currentFightCost = timeCost;
+            foreach(Character character in characters)
+            {
+                int index = (int) character;
+                scaleCharacter(index, timeSinceLastUpdate / factor);
+            }
+
             int updateTimes = calculateUpdateTimes(factor);
             if (updateTimes >= 1 || geneticResults == null)
             {
@@ -207,15 +227,12 @@ public class MapManager: SingletonMonoBehaviour<MapManager>
                 geneticCost += timeCost;
                 foreach(Character character in characters)
                 {
+                    
                     int index = (int) character;
                     charactersEnergy[index]++;
+                    resetScale(index);
                     if (charactersEnergy[index] >= 8)
                         disableCharacter(index);
-
-                    // string str = "";
-                    // foreach (int energy in charactersEnergy)
-                    //     str += energy.ToString() + ", ";
-                    // Debug.Log(str);
                 }
                 goToNextEvent();
             }

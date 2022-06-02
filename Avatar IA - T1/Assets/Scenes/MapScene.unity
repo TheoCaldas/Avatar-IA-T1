@@ -1601,7 +1601,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 581531933}
   objective: {fileID: 1406145840}
-  followPathTimeFactor: 0.1
+  followPathTimeFactor: 0.01
   visualizerTimeFactor: 0
   eventFightTimeFactor: 0.1
   pathCost: 0
